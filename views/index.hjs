@@ -1,12 +1,65 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ title }}</title>
+    <title>Stock App</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!--for ajax and selectable stuff-->
+    <script src="../javascripts/jquery-1.10.2.js"></script>
   </head>
   <body>
-    <h1>{{ title }}</h1>
-    <p>Welcome to {{ title }}</p>
+  <h1>STOCK APP</h1>
+    <form action='/' method='post' id='stockSubmit'>
+
+	    <table>
+	    <tr>
+	    	<td>Stock Name</td>
+	    	<td> <input type="text" name="stock" id="stock" value="{{ stock_name }}"></td>
+	    <tr>
+	    	<td><input type="submit" value="Submit" id="submitButton"></td>
+	   	</tr>
+	    </table>
+    </form>
+
+
+    <table>
+    	<tr>
+    		<td>STOCK NAME</td>
+    		<td id='stockName'></td>
+    	</tr>
+    	<tr>
+    		<td>EXCHANGE</td>
+    		<td id='exchange'></td>
+    	</tr>
+    	<tr>
+    		<td>PRICE</td>
+    		<td id='price'></td>
+    	</tr>
+    </table>
     
+    <!--ADDING AJAX CALLS ON SUBMIT-->
+    <!-- Overriding submit with ajax call-->
+    <script type="text/javascript">
+	    $(document).ready(function  () {
+		 	$("#stockSubmit").submit(function  (e) {
+		 		e.preventDefault();
+		 		$.post("/",$(this).serialize(), function( data ) {
+		 		  setStockData(data);
+				});
+		 	})
+		 });
+
+
+	    function setStockData(data){
+	    	var stockData = JSON.parse(data);
+			document.getElementById('stockName').innerHTML = stockData[0].t;
+	    	document.getElementById('exchange').innerHTML = stockData[0].e;
+	    	document.getElementById('price').innerHTML = stockData[0].l;
+	    }
+
+
+    </script>
+
+
+
   </body>
 </html>
