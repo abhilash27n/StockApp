@@ -44,9 +44,10 @@ RUN WITH NODEMON
 nodemon bin/www
 
 
-GOOGLE STOCK API
+GOOGLE STOCK API and YAHOO FINANCE API
 ----
 npm install google-stocks --save
+npm install yahoo-finance --save
 
 
 MySQL INSTALLATION(https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/)
