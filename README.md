@@ -49,4 +49,10 @@ GOOGLE STOCK API
 npm install google-stocks --save
 
 
+MySQL INSTALLATION(https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/)
+----
+npm install node-mysql --save
+
+
+
 IF YOU ALREADY HAVE NODEJS INSTALLED, pull repo, do "npm install" inside pulled repo to install all dependencies, and run using "nodemon bin/www"
