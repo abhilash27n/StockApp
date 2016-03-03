@@ -23,24 +23,38 @@ router.post('/', function(req, res){
 	console.log("REQUESTING FOR: "+stockName);
 
 
-	//YAHOO FINANCE BEGIN
+	//YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
 	yahooFinance.snapshot({
 	  symbol: stockName,
-	  fields: ['s', 'n', 'd1', 'l1', 'y', 'r'],
+	  fields: ['s', 'd1', 't1', 'l1', 'v', ],
 	}, function (err, snapshot) {
 	  console.log("#############YAHOO FINANCE REQUEST#############");
 	  console.log(snapshot);
+
+	  var price = snapshot.lastTradePriceOnly;
+	  var volume = snapshot.volume;
+
+	  var tuple = { name: stockName, price: price, volume: volume };
+
+	   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
+		  if (!err)
+		    console.log('Success inserting into database');
+		  else
+		    console.log('Error while performing Query.');
+		});
+
+	  console.log(snapshot.symbol);
 	});
 	//YAHOO FINANCE END
 
-	//YAHOO FINANCE HISTORICAL BEGIN
+	//YAHOO FINANCE HISTORICAL BEGIN  
 	yahooFinance.historical({
   		symbol: stockName,
   		from: '2012-01-01',
   		to: '2012-01-05',
   		// period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only) 
 	}, function (err, quotes) {
-	  	console.log("#############YAHOO FINANCE REQUEST#############");
+	  	console.log("#############YAHOO HISTORICAL REQUEST#############");
 	  	console.log(quotes);
 	});
 	//YAHOO FINANCE HISTORICAL END
@@ -48,14 +62,7 @@ router.post('/', function(req, res){
 	//GOOGLE STOCK BEGIN
 	googleStocks.get([stockName], function(error, data) {
 	  console.log("#############GOOGLE STOCK REQUEST#############");
-
-	  connection.query('SELECT * from Historical', function(err, rows, fields) {
-		  if (!err)
-		    console.log('The solution is: ', rows);
-		  else
-		    console.log('Error while performing Query.');
-		});
-
+	  console.log(data);
 
 	   res.send(JSON.stringify(data));
 	});
