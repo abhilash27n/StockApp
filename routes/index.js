@@ -20,6 +20,8 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res){
 
 	var stockName = req.body.stock;
+	var fromDate = req.body.fromDate;
+	var toDate = req.body.toDate;
 	console.log("REQUESTING FOR: "+stockName);
 
 
@@ -50,8 +52,8 @@ router.post('/', function(req, res){
 	//YAHOO FINANCE HISTORICAL BEGIN  
 	yahooFinance.historical({
   		symbol: stockName,
-  		from: '2012-01-01',
-  		to: '2012-01-05',
+  		from: fromDate,
+  		to: toDate,
   		// period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only) 
 	}, function (err, quotes) {
 	  	console.log("#############YAHOO HISTORICAL REQUEST#############");
