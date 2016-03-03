@@ -26,7 +26,7 @@ router.post('/', function(req, res){
 	//YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
 	yahooFinance.snapshot({
 	  symbol: stockName,
-	  fields: ['s', 'd1', 't1', 'l1', 'v', ],
+	  fields: ['s', 'd1', 't1', 'l1', 'v'],
 	}, function (err, snapshot) {
 	  console.log("#############YAHOO FINANCE REQUEST#############");
 	  console.log(snapshot);
@@ -36,6 +36,7 @@ router.post('/', function(req, res){
 
 	  var tuple = { name: stockName, price: price, volume: volume };
 
+	  //INSERTING INTO DATABASE
 	   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 		  if (!err)
 		    console.log('Success inserting into database');
@@ -43,7 +44,6 @@ router.post('/', function(req, res){
 		    console.log('Error while performing Query.');
 		});
 
-	  console.log(snapshot.symbol);
 	});
 	//YAHOO FINANCE END
 
@@ -56,6 +56,29 @@ router.post('/', function(req, res){
 	}, function (err, quotes) {
 	  	console.log("#############YAHOO HISTORICAL REQUEST#############");
 	  	console.log(quotes);
+	  	console.log(quotes.length);
+
+	  	//INSERTING ALL VALUES INTO DATABASE
+
+	  	for(var i = 0; i < quotes.length; i++){
+
+	  		var open = quotes[i].open;
+	  		var high = quotes[i].high;
+	  		var low = quotes[i].low;
+	  		var close = quotes[i].close;
+	  		var histtime = quotes[i].date;
+	  		var volume = quotes[i].volume;
+
+	  		var tuple = { name: stockName, open: open, high:high, low:low, close:close, histtime: histtime, volume: volume};
+
+	  		connection.query('INSERT INTO Historical SET ?', tuple, function(err, res) {
+			  if (!err)
+			    console.log('Success inserting history into database');
+			  else
+			    console.log('Error while performing Query.');
+			});
+	  	}
+
 	});
 	//YAHOO FINANCE HISTORICAL END
 
