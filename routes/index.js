@@ -7,8 +7,8 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
+  user     : 'root',
+  password : 'root',
   database : 'stockSchema'
 });
 
@@ -99,7 +99,7 @@ router.post('/', function(req, res){
 	//req.query.param
 });
 
-new CronJob('0 * * * * *', function() {
+new CronJob('*/5 * * * * *', function() {
 
 	console.log("CALLING STOCK EVERY MINUTE");	
     var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
@@ -116,8 +116,18 @@ new CronJob('0 * * * * *', function() {
 		  var price = snapshot.lastTradePriceOnly;
 		  var volume = snapshot.volume;
 		  var symbol = snapshot.symbol;
+		  var date = snapshot.lastTradeDate;
+		  var time = snapshot.lastTradeTime;
 
-		  var tuple = { name: symbol, price: price, volume: volume };
+		  if(time.slice(-2)=='am')
+		  	date.setHours(parseInt(time.split(':')[0]));
+		  else
+		  	date.setHours(parseInt(time.split(':')[0]) + 12);
+		  
+		  date.setMinutes(parseInt(time.split(':')[1].slice(0,2)));
+
+
+		  var tuple = { name: symbol, price: price, volume: volume, realtime: date };
 
 		  //INSERTING INTO DATABASE
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
