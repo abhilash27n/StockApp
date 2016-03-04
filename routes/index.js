@@ -1,5 +1,6 @@
 var express = require('express');
 var mysql = require('mysql');
+var CronJob = require('cron').CronJob;
 var googleStocks = require('google-stocks');
 var yahooFinance = require('yahoo-finance');
 var router = express.Router();
@@ -97,6 +98,39 @@ router.post('/', function(req, res){
 	//res.send('USE FOR API OR HTTP STATUS OR DIRECT JSON OBJECT');
 	//req.query.param
 });
+
+new CronJob('0 * * * * *', function() {
+
+	console.log("CALLING STOCK EVERY MINUTE");	
+    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
+
+	for(var i = 0; i < stockNames.length; i++){
+	  //YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
+		yahooFinance.snapshot({
+		  symbol: stockNames[i],
+		  fields: ['s', 'd1', 't1', 'l1', 'v'],
+		}, function (err, snapshot) {
+		  console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
+		  console.log(snapshot);
+
+		  var price = snapshot.lastTradePriceOnly;
+		  var volume = snapshot.volume;
+		  var symbol = snapshot.symbol;
+
+		  var tuple = { name: symbol, price: price, volume: volume };
+
+		  //INSERTING INTO DATABASE
+		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
+			  if (!err)
+			    console.log('Success inserting into database');
+			  else
+			    console.log('Error while performing Query.');
+			});
+
+		});
+	}
+	//YAHOO FINANCE END
+}, null, true, 'America/New_York');
 
 
 process.on( 'SIGINT', function() {

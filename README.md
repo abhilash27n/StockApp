@@ -21,6 +21,10 @@ INSTALL EXPRESS
 ----
 sudo npm install -g express-generator
 
+NODEMON install(Restarts server automatically everytime you change file)
+-----
+npm install -g nodemon
+
 START PROJECT(with hogan template for html processing)
 ----
 express StockApp --hogan -c less
@@ -35,19 +39,15 @@ RUN TO CHECK
 DEBUG=StockApp:server ./bin/www
 localhost:3000
 
-NODEMON install(Restarts server automatically everytime you change file)
------
-npm install -g nodemon
-
 RUN WITH NODEMON
 ----
 nodemon bin/www
-
 
 GOOGLE STOCK API and YAHOO FINANCE API
 ----
 npm install google-stocks --save
 npm install yahoo-finance --save
+npm install cron --save
 
 
 MySQL INSTALLATION(https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/)
