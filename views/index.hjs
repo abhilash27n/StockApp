@@ -22,7 +22,10 @@
 	  <option value="AAPL">Apple</option>
 	</select>
 
-	<div id="stockChart" style="height: 400px; min-width: 310px"></div>
+	<br>
+	<div id="realTimeStockChart" style="height: 400px; min-width: 310px"></div>
+	<br>
+	<div id="historicalStockChart" style="height: 400px; min-width: 310px"></div>
     
     <!--ADDING AJAX CALLS ON SUBMIT-->
     <!-- Overriding submit with ajax call-->
@@ -39,7 +42,8 @@
 	    var $eventSelect = $(".stock-selector");
 	    $eventSelect.on("select2:select", function (e) { 
 	    	var selectedStock = e.params.data.id;    //or data.text
-	    	createChart(selectedStock);
+	    	createRealTimeChart(selectedStock);
+	    	createHistoricalChart(selectedStock);
 	    }); 
 
 	    //STOCK CHART
@@ -252,18 +256,57 @@
 		//CHART DESIGN END
 		// Apply the theme
 		Highcharts.setOptions(Highcharts.theme);
-	    function createChart (selectedStock) {
+	    function createRealTimeChart (selectedStock) {
 		    $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+selectedStock, function (data) {
 
 		        // Create the chart
-		        $('#stockChart').highcharts('StockChart', {
+		        $('#realTimeStockChart').highcharts('StockChart', {
 
 		            rangeSelector : {
 		                selected : 1
 		            },
 
 		            title : {
-		                text : selectedStock + ' Stock Price'
+		                text : selectedStock + ' Real Time Stock Price'
+		            },
+
+		            series : [{
+		                name : selectedStock + ' Stock Price',
+		                data : data,
+		                type : 'area',
+		                threshold : null,
+		                tooltip : {
+		                    valueDecimals : 2
+		                },
+		                fillColor : {
+		                    linearGradient : {
+		                        x1: 0,
+		                        y1: 0,
+		                        x2: 0,
+		                        y2: 1
+		                    },
+		                    stops : [
+		                        [0, Highcharts.getOptions().colors[0]],
+		                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+		                    ]
+		                }
+		            }]
+		        });
+		    });
+		}
+
+		function createHistoricalChart (selectedStock) {
+		    $.getJSON('http://localhost:3000/getHistoricalStockData?stock='+selectedStock, function (data) {
+
+		        // Create the chart
+		        $('#historicalStockChart').highcharts('StockChart', {
+
+		            rangeSelector : {
+		                selected : 1
+		            },
+
+		            title : {
+		                text : selectedStock + ' Historical Stock Price'
 		            },
 
 		            series : [{
