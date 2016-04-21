@@ -7,15 +7,55 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'root',
-  password : 'root',
+  user     : 'stockuser',
+  password : 'password',
   database : 'stockSchema'
 });
 
-
+var count = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
+});
+
+
+//GET stock data for chart - API
+router.get('/getStockData', function(req, res, next){
+	var stockName = req.query.stock;
+	//TODO - ERROR CHECKING
+	//console.log(stockName);
+	var query = 'select unix_timestamp(realtime) as time, price from RealTime where name = "'+ stockName +'" order by realtime';
+
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    //console.log("No of songs returned: "+no_songs);
+		    if(noRows == 0){
+		    	//No songs returned
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var table = [];
+		    	for(var i = 0; i < rows.length; i++){
+		    		var time = rows[i].time;
+		    		var price = rows[i].price;
+
+		    		var value = [];
+		    		value.push(time);
+		    		value.push(price);
+		    		table.push(value);
+
+		    	}
+			    res.send(table);
+		   }
+		    
+		}
+		else
+		    console.log('Error while performing stock request query.');
+		});
+
+
 });
 
 router.post('/', function(req, res){
@@ -41,8 +81,8 @@ router.post('/', function(req, res){
 
 	  //INSERTING INTO DATABASE
 	   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
-		  if (!err)
-		    console.log('Success inserting into database');
+		  if (!err)	
+		  	console.log('Success inserting into database');		    
 		  else
 		    console.log('Error while performing Query.');
 		});
@@ -99,7 +139,7 @@ router.post('/', function(req, res){
 	//req.query.param
 });
 
-new CronJob('*/5 * * * * *', function() {
+new CronJob('0 * * * * *', function() {
 
 	console.log("CALLING STOCK EVERY MINUTE");	
     var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
@@ -110,8 +150,8 @@ new CronJob('*/5 * * * * *', function() {
 		  symbol: stockNames[i],
 		  fields: ['s', 'd1', 't1', 'l1', 'v'],
 		}, function (err, snapshot) {
-		  console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
-		  console.log(snapshot);
+		  //console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
+		  //console.log(snapshot);
 
 		  var price = snapshot.lastTradePriceOnly;
 		  var volume = snapshot.volume;
@@ -124,6 +164,7 @@ new CronJob('*/5 * * * * *', function() {
 		  else
 		  	date.setHours(parseInt(time.split(':')[0]) + 12);
 		  
+		  //converting string time into database datetime
 		  date.setMinutes(parseInt(time.split(':')[1].slice(0,2)));
 
 
@@ -131,9 +172,13 @@ new CronJob('*/5 * * * * *', function() {
 
 		  //INSERTING INTO DATABASE
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
-			  if (!err)
-			    console.log('Success inserting into database');
-			  else
+			if (!err){
+		  		//console.log('Success inserting into database');
+		  		count++;
+		  		if(count % 5 == 0)
+		  			console.log("Inserted "+count/5+" times");
+		  	}
+			else
 			    console.log('Error while performing Query.');
 			});
 
