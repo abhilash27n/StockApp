@@ -45,25 +45,9 @@ CREATE TABLE RealTime(
 
 COMMIT;
 
-/*
-
-# Old Table Schema
-
- CREATE TABLE `Historical` (
-  `name` varchar(4) DEFAULT NULL,
-  `open` float DEFAULT NULL,
-  `high` float DEFAULT NULL,
-  `low` float DEFAULT NULL,
-  `close` float DEFAULT NULL,
-  `histtime` date DEFAULT NULL,
-  `volume` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-
-CREATE TABLE `RealTime` (
-  `name` varchar(4) DEFAULT NULL,
-  `price` float DEFAULT NULL,
-  `realtime` datetime DEFAULT NULL,
-  `volume` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
-
-*/
+# Initial Setup
+insert into Stocks values("GOOG", "Google");
+insert into Stocks values("YHOO", "Yahoo");
+insert into Stocks values("TSLA", "Telsa");
+insert into Stocks values("FB", "Facebook");
+insert into Stocks values("AAPL", "Apple");
