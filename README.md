@@ -57,3 +57,12 @@ npm install node-mysql --save
 
 
 IF YOU ALREADY HAVE NODEJS INSTALLED, pull repo, do "npm install" inside pulled repo to install all dependencies, and run using "nodemon bin/www"
+
+
+
+
+APIS and Pages
+------------
+http://localhost:3000/getRealTimeStockData?stock=GOOG
+http://localhost:3000/getHistoricalStockData?stock=GOOG
+http://localhost:3000/histDataAdd    - which calls /addHistoricalData

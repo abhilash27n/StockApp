@@ -15,16 +15,16 @@ var connection = mysql.createConnection({
 var count = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index');
 });
 
 
-//GET stock data for chart - API
-router.get('/getStockData', function(req, res, next){
+//GET realtime stock data for chart - API
+router.get('/getRealTimeStockData', function(req, res, next){
 	var stockName = req.query.stock;
 	//TODO - ERROR CHECKING
 	//console.log(stockName);
-	var query = 'select unix_timestamp(realtime) as time, price from RealTime where name = "'+ stockName +'" order by realtime';
+	var query = 'select unix_timestamp(realtime) as time, price from RealTime where stockid = "'+ stockName +'" order by time';
 
 	connection.query(query, function(err, rows, fields) {
 		if (!err){
@@ -59,7 +59,53 @@ router.get('/getStockData', function(req, res, next){
 
 });
 
-router.post('/', function(req, res){
+
+//GET historical stock data for chart - API
+router.get('/getHistoricalStockData', function(req, res, next){
+	var stockName = req.query.stock;
+	//TODO - ERROR CHECKING
+	//console.log(stockName);
+	var query = 'select unix_timestamp(histtime) as time, close as price from Historical where stockid = "'+ stockName +'" order by time';
+
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    //console.log("No of songs returned: "+no_songs);
+		    if(noRows == 0){
+		    	//No songs returned
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var open = "?(";
+		    	var table = [];
+		    	for(var i = 0; i < rows.length; i++){
+		    		var time = rows[i].time*1000;
+		    		var price = rows[i].price;
+
+		    		var value = [];
+		    		value.push(time);
+		    		value.push(price);
+		    		table.push(value);
+
+		    	}
+			    res.send(JSON.stringify(table));
+		   }
+		    
+		}
+		else
+		    console.log('Error while performing stock request query.');
+		});
+
+
+});
+
+router.get('/histDataAdd', function(req, res){
+	res.render('addHistoricalData');
+});
+
+//Add historical Data to database
+router.post('/addHistoricalData', function(req, res){
 
 	var stockName = req.body.stock;
 	var fromDate = req.body.fromDate;
@@ -68,7 +114,7 @@ router.post('/', function(req, res){
 
 
 	//YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
-	yahooFinance.snapshot({
+	/*yahooFinance.snapshot({
 	  symbol: stockName,
 	  fields: ['s', 'd1', 't1', 'l1', 'v'],
 	}, function (err, snapshot) {
@@ -78,7 +124,7 @@ router.post('/', function(req, res){
 	  var price = snapshot.lastTradePriceOnly;
 	  var volume = snapshot.volume;
 
-	  var tuple = { name: stockName, price: price, volume: volume };
+	  var tuple = { stockid: stockName, price: price, volume: volume };
 
 	  //INSERTING INTO DATABASE
 	   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
@@ -88,7 +134,7 @@ router.post('/', function(req, res){
 		    console.log('Error while performing Query.');
 		});
 
-	});
+	});*/
 	//YAHOO FINANCE END
 
 	//YAHOO FINANCE HISTORICAL BEGIN  
@@ -113,7 +159,7 @@ router.post('/', function(req, res){
 	  		var histtime = quotes[i].date;
 	  		var volume = quotes[i].volume;
 
-	  		var tuple = { name: stockName, open: open, high:high, low:low, close:close, histtime: histtime, volume: volume};
+	  		var tuple = { stockid: stockName, open: open, high:high, low:low, close:close, histtime: histtime, volume: volume};
 
 	  		connection.query('INSERT INTO Historical SET ?', tuple, function(err, res) {
 			  if (!err)
@@ -127,12 +173,12 @@ router.post('/', function(req, res){
 	//YAHOO FINANCE HISTORICAL END
 
 	//GOOGLE STOCK BEGIN
-	googleStocks.get([stockName], function(error, data) {
+	/*googleStocks.get([stockName], function(error, data) {
 	  console.log("#############GOOGLE STOCK REQUEST#############");
 	  console.log(data);
 
 	   res.send(JSON.stringify(data));
-	});
+	});*/
 	//GOOGLE STOCK END
 
 	//res.render('index', { title: stockName });
@@ -140,6 +186,9 @@ router.post('/', function(req, res){
 	//req.query.param
 });
 
+//REAL TIME DATA REQUEST
+
+//TODO - fix calling when stocks are closed(duplicate check or something)
 new CronJob('0 * * * * *', function() {
 
 	console.log("CALLING STOCK EVERY MINUTE");	
@@ -152,7 +201,7 @@ new CronJob('0 * * * * *', function() {
 		  fields: ['s', 'd1', 't1', 'l1', 'v'],
 		}, function (err, snapshot) {
 		  //console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
-		  //console.log(snapshot);
+		  console.log(snapshot);
 
 		  var price = snapshot.lastTradePriceOnly;
 		  var volume = snapshot.volume;
@@ -160,17 +209,29 @@ new CronJob('0 * * * * *', function() {
 		  var date = snapshot.lastTradeDate;
 		  var time = snapshot.lastTradeTime;
 
-		  if(time.slice(-2)=='am')
-		  	date.setHours(parseInt(time.split(':')[0]));
-		  else
-		  	date.setHours(parseInt(time.split(':')[0]) + 12);
+		  if(time.slice(-2)=='am'){
+		  	if(time.split(':') == "12"){
+		  		date.setHours(parseInt(time.split(':')[0]) + 12);	
+		  	}
+		  	else{
+		  		date.setHours(parseInt(time.split(':')[0]));
+		  	}
+		  }
+		  else{
+		  	if(time.split(':') == "12"){
+		  		date.setHours(parseInt(time.split(':')[0]));
+		  	}
+		  	else{
+		  		date.setHours(parseInt(time.split(':')[0]) + 12);	
+		  	}
+		  }
 		  
 		  //converting string time into database datetime
 		  date.setMinutes(parseInt(time.split(':')[1].slice(0,2)));
 
 
-		  var tuple = { name: symbol, price: price, volume: volume, realtime: date };
-
+		  var tuple = { stockid: symbol, price: price, volume: volume, realtime: date };
+		  console.log(tuple);
 		  //INSERTING INTO DATABASE
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 			if (!err){

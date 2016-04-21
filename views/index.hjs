@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Stock App</title>
+    <title>Welcome to Stock App</title>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <link rel="stylesheet"  href="/stylesheets/select2.css"/>
 	
@@ -15,41 +15,6 @@
   </head>
   <body>
   <h1>STOCK APP</h1>
-    <form action='/' method='post' id='stockSubmit'>
-
-	    <table>
-	    <tr>
-	    	<td>Stock Name</td>
-	    	<td> <input type="text" name="stock" id="stock" value="{{ stock_name }}"></td>
-	    <tr>
-	    <tr>
-	    	<td>From Date(yyyy-mm-dd)</td>
-	    	<td> <input type="text" name="fromDate" id="fromDate" value="{{ from_date }}"></td>
-	    <tr>
-	    <tr>
-	    	<td>To Date(yyyy-mm-dd)</td>
-	    	<td> <input type="text" name="toDate" id="toDate" value="{{ to_date }}"></td>
-	    <tr>
-	    	<td><input type="submit" value="Submit" id="submitButton"></td>
-	   	</tr>
-	    </table>
-    </form>
-
-
-    <table>
-    	<tr>
-    		<td>STOCK NAME</td>
-    		<td id='stockName'></td>
-    	</tr>
-    	<tr>
-    		<td>EXCHANGE</td>
-    		<td id='exchange'></td>
-    	</tr>
-    	<tr>
-    		<td>PRICE</td>
-    		<td id='price'></td>
-    	</tr>
-    </table>
 
     <select class="stock-selector" style='width:200px' change="stockChanged();">
 	  <option value="TSLA">Tesla</option>
@@ -62,30 +27,13 @@
     <!--ADDING AJAX CALLS ON SUBMIT-->
     <!-- Overriding submit with ajax call-->
     <script type="text/javascript">
-	    $(document).ready(function  () {
-		 	$("#stockSubmit").submit(function  (e) {
-		 		e.preventDefault();
-		 		$.post("/",$(this).serialize(), function( data ) {
-		 		  setStockData(data);
-				});
-		 	})
-		 });
-
+	    
 	    $(document).ready(function() {
 		  $(".stock-selector").select2({
 		  	placeholder: "Select a stock",
 		  	allowClear: true
 		  	});
 		});
-
-	  
-
-	    function setStockData(data){
-	    	var stockData = JSON.parse(data);
-			document.getElementById('stockName').innerHTML = stockData[0].t;
-	    	document.getElementById('exchange').innerHTML = stockData[0].e;
-	    	document.getElementById('price').innerHTML = stockData[0].l;
-	    }
 
 	    ///STOCK SELECTOR
 	    var $eventSelect = $(".stock-selector");
@@ -305,7 +253,7 @@
 		// Apply the theme
 		Highcharts.setOptions(Highcharts.theme);
 	    function createChart (selectedStock) {
-		    $.getJSON('http://localhost:3000/getStockData?stock='+selectedStock, function (data) {
+		    $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+selectedStock, function (data) {
 
 		        // Create the chart
 		        $('#stockChart').highcharts('StockChart', {
@@ -345,8 +293,6 @@
 
 
     </script>
-
-
 
   </body>
 </html>
