@@ -36,9 +36,10 @@ router.get('/getStockData', function(req, res, next){
 		    	res.send(JSON.stringify("NoRowsReturned"));
 		    }
 		    else{
+		    	var open = "?(";
 		    	var table = [];
 		    	for(var i = 0; i < rows.length; i++){
-		    		var time = rows[i].time;
+		    		var time = rows[i].time*1000;
 		    		var price = rows[i].price;
 
 		    		var value = [];
@@ -47,7 +48,7 @@ router.get('/getStockData', function(req, res, next){
 		    		table.push(value);
 
 		    	}
-			    res.send(table);
+			    res.send(JSON.stringify(table));
 		   }
 		    
 		}

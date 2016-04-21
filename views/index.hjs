@@ -310,7 +310,6 @@
 		        // Create the chart
 		        $('#stockChart').highcharts('StockChart', {
 
-
 		            rangeSelector : {
 		                selected : 1
 		            },
