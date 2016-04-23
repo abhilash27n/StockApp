@@ -14,7 +14,13 @@
 	<script src="../javascripts/Highstock-4.2.4/js/modules/exporting.js"></script>
   </head>
   <body>
-  <h1>STOCK APP</h1>
+  <h1>STOCK APP - Welcome, {{ username }}</h1>
+
+  <!-- HIDDEN DIV TO STORE USER NAME AND USER ID-->
+  <div id="hiddenTextFields" style="display: none;">
+	  <input type="text" value="{{ username }}" id=username name=username/>
+	  <input type="text" value="{{ userid }}" id=userid name=userid/>
+  </div>
 
   	<div style='float: right;'>
   		<form action="/logout">
@@ -35,7 +41,8 @@
     <script type="text/javascript">
 
 	    $(document).ready(function() {
-	    	$.getJSON('http://localhost:3000/getAllStocks?user=ALL', function(data){
+	    	var user = document.getElementById("userid").value;
+	    	$.getJSON('http://localhost:3000/getAllStocks?user='+user, function(data){
 	    		$(".stock-selector").select2({
 				  	data: data,
 				  	placeholder: "Select a stock",

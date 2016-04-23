@@ -19,7 +19,7 @@ var count = 0;
 router.get('/', function(req, res, next) {
   console.log("The session is "+req.session.secret);
   if(req.session.secret) {
-  	res.render('stockSelectionPage',{});
+  	res.render('stockSelectionPage',{userid: req.session.secret, username: req.session.fullName});
   }
   else{
   	res.render('login');
@@ -48,9 +48,10 @@ router.post('/login', function(req, res, next) {
   		// There is a match, redirect page to Main Page
   		if(rows.length==1) {
   			req.session.secret = userid;
+  			req.session.fullName = rows[0].fullname;
   			//console.log(rows);
   			console.log("user valid");
-  			res.render('stockSelectionPage');
+  			res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
   		}
   		else {
   			console.log("user invalid");
