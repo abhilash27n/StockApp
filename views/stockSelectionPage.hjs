@@ -17,7 +17,7 @@
   <h1>STOCK APP - Welcome, {{ username }}</h1>
 
   <!-- HIDDEN DIV TO STORE USER NAME AND USER ID and also for selling or buying stock-->
-  <div id="hiddenTextFields" style="display: block;">
+  <div id="hiddenTextFields" style="display: none;">
  	 <form id="buyOrSell" action="/buyOrSell" method="post">
 		  <input type="text" value="{{ username }}" id="username" name="username"/>
 		  <input type="text" value="{{ userid }}" id="userid" name="userid"/>
