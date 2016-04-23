@@ -16,7 +16,11 @@
   <body>
   <h1>STOCK APP</h1>
 
-  	<!--<div style='float: right;'><a href="home.php">Logout</a></div>-->
+  	<div style='float: right;'>
+  		<form action="/logout">
+  			<input type="submit" value="Logout" />
+  		</form>
+  	</div>
 
     <select class="stock-selector" style='width:200px' change="stockChanged();">
 	  <option value="TSLA">Tesla</option>

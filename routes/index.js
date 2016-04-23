@@ -7,8 +7,8 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
+  user     : 'root',
+  password : 'root',
   database : 'stockSchema'
 });
 
@@ -58,6 +58,12 @@ router.post('/login', function(req, res, next) {
   });
 
 });
+
+router.get('/logout', function(req, res, next) {
+	req.session.secret="";
+	res.render('login');
+});
+
 
 //GET ALL Stocks
 router.get('/getAllStocks', function(req, res, next) {
