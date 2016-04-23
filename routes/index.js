@@ -7,8 +7,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'root',
-  password : 'root',
+  user     : 'stockuser',
+  password : 'password',
+  //user   : 'root',
+  //password: 'root',
   database : 'stockSchema'
 });
 
@@ -316,7 +318,7 @@ new CronJob('0 * * * * *', function() {
 
 
 process.on( 'SIGINT', function() {
-  console.log( "\nGracefully shutting down from SIGINT (Ctrl-C)" );
+  console.log( "\nGracefully shutting down form SIGINT (Ctrl-C)" );
   connection.end();
   process.exit( );
 });

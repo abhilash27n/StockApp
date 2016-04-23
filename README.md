@@ -65,4 +65,5 @@ APIS and Pages
 ------------
 http://localhost:3000/getRealTimeStockData?stock=GOOG
 http://localhost:3000/getHistoricalStockData?stock=GOOG
+http://localhost:3000/getAllStocks?user=ALL   //ALL or username
 http://localhost:3000/histDataAdd    - which calls /addHistoricalData

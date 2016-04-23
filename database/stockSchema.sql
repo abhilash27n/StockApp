@@ -53,3 +53,4 @@ insert into Stocks values("FB", "Facebook");
 insert into Stocks values("AAPL", "Apple");
 
 insert into Users(userid, pswd, fullName) values ("test", "test", "TEST");
+insert into Portfolio values("AAPL", "test");
