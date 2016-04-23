@@ -28,9 +28,8 @@
   </div>
 
   	<div style='float: right;'>
-  		<form action="/logout">
-  			<input type="submit" value="Logout" />
-  		</form>
+  		  <a href="/portfolioPage"> PortFolio Analysis </a> </br>
+  		  <a href="/logout"> Logout </a>
   	</div>
 
     <select class="stock-selector" style='width:200px' change="stockChanged();">

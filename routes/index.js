@@ -13,10 +13,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
-  // user   : 'root',
-  // password: 'root',
+  // user     : 'stockuser',
+  // password : 'password',
+  user   : 'root',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -66,6 +66,20 @@ router.post('/login', function(req, res, next) {
   	}
   });
 
+});
+
+router.get('/stockSelectionPage', function(req, res, next) {
+	if(req.session.secret=="")
+		res.render('login');
+	else
+		res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
+});
+
+router.get('/portfolioPage', function(req, res, next) {
+	if(req.session.secret=="")
+		res.render('login');
+	else
+		res.render('portfolioPage', {userid: req.session.secret, username: req.session.fullName});
 });
 
 router.get('/logout', function(req, res, next) {
