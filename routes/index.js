@@ -7,15 +7,56 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
+  user     : 'root',
+  password : 'root',
   database : 'stockSchema'
 });
 
 var count = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index');
+  console.log("The session is "+req.session.secret);
+  if(req.session.secret) {
+  	res.render('stockSelectionPage',{});
+  }
+  else{
+  	res.render('login');
+  } 
+  	
+});
+
+router.post('/login', function(req, res, next) {
+  var userid = req.body.userid;
+  var pswd = req.body.pswd;
+
+  query = "select userid, pswd, fullname from Users where userid = \""+userid+"\"  and "+"pswd = \""+pswd+"\";";
+  console.log(query);
+
+  //var sess = req.session;
+
+  //console.log(req.session);
+
+  connection.query(query, function(err, rows, fields) {
+  	if(err) {
+  		// Say user invalid in Login Page
+  		console.log("Some Login Error, Check Database Config.");
+  	}
+  	else {
+  		// Set Session here
+  		// There is a match, redirect page to Main Page
+  		if(rows.length==1) {
+  			req.session.secret = userid;
+  			//console.log(rows);
+  			console.log("user valid");
+  			res.render('stockSelectionPage');
+  		}
+  		else {
+  			console.log("user invalid");
+  			res.render('login');
+  		}
+  	}
+  });
+
 });
 
 
@@ -201,7 +242,7 @@ new CronJob('0 * * * * *', function() {
 		  fields: ['s', 'd1', 't1', 'l1', 'v'],
 		}, function (err, snapshot) {
 		  //console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
-		  console.log(snapshot);
+		  //console.log(snapshot);
 
 		  var price = snapshot.lastTradePriceOnly;
 		  var volume = snapshot.volume;
@@ -231,7 +272,7 @@ new CronJob('0 * * * * *', function() {
 
 
 		  var tuple = { stockid: symbol, price: price, volume: volume, realtime: date };
-		  console.log(tuple);
+		  //console.log(tuple);
 		  //INSERTING INTO DATABASE
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 			if (!err){

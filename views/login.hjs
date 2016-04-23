@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stock Application</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Stock Application Sign-in</h1>
+    <form action="/login" method="post">
+            Username<input type="text" name="userid" id="userid"/>
+            Password<input type="password" name="pswd" id="pswd"/>
+            <input type="submit" value="Login"/>
+            <input type="reset" value="Cancel"/>
+    </form>
+
+
+  </body>
+</html>

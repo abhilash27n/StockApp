@@ -17,6 +17,7 @@
     "morgan": "~1.6.1",
     "mysql": "^2.10.2",
     "serve-favicon": "~2.3.0",
-    "yahoo-finance": "^0.2.12"
+    "yahoo-finance": "^0.2.12",
+    "express-session": "~1.13.0"
   }
 }
