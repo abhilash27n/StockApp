@@ -93,6 +93,7 @@ router.get('/getAllStocks', function(req, res, next) {
 	});
 });
 
+
 //GET realtime stock data for chart - API
 router.get('/getRealTimeStockData', function(req, res, next){
 	var stockName = req.query.stock;
@@ -132,6 +133,110 @@ router.get('/getRealTimeStockData', function(req, res, next){
 
 
 });
+
+
+//GET On Balance Volume for Chart - API
+router.get('/onBalanceVolume', function(req, res, next){
+	var stockName = req.query.stock;
+	//TODO - ERROR CHECKING
+	//console.log("Stock Id: "+stockName);
+	var query = 'select unix_timestamp(histtime) as time, volume, close from Historical where stockid= "'+ stockName +'" order by histtime desc limit 30';
+
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    //console.log("No of songs returned: "+no_songs);
+		    if(noRows == 0){
+		    	//No songs returned
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var open = "?(";
+		    	var table = [];
+		    	var currObv = 0;
+		    	for(var i=1; i<rows.length;i++){
+		    		if(rows[i].close>rows[i-1].close) {
+		    			currObv += rows[i].volume; 
+		    		} 
+		    		else if(rows[i].close<rows[i-1].close) {
+		    			currObv -= rows[i].volume;
+		    		}
+		    		else {
+		    			currObv += 0;
+		    		}
+
+		    		var time = rows[i].time*1000;
+		    		var value = [];
+		    		value.push(time);
+		    		value.push(currObv);
+		    		table.push(value);
+		    	}
+
+			    res.send(JSON.stringify(table));
+		   }		    
+		}
+		else
+		    console.log('Error while performing realtime stock request query.');
+	});
+});
+
+
+
+//GET Simple Moving Average for Chart - API
+router.get('/simpleMovingAverage', function(req, res, next){
+	var stockName = req.query.stock;
+	//var timePeriod = req.query.period;
+	var timePeriod = 50; // Most Commonly used
+	//TODO - ERROR CHECKING
+	//console.log("Stock Id: "+stockName);
+	var query = 'select unix_timestamp(histtime) as time, close from Historical where stockid= "'+ stockName +'" order by histtime LIMIT 400';
+
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    //console.log("No of songs returned: "+no_songs);
+		    if(noRows == 0){
+		    	//No songs returned
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var open = "?(";
+		    	var table = [];
+		    	var movAvg = 0;
+		    	var total = 0;
+		    	var index = 0;
+		    	
+		    	if(rows.length>timePeriod) {
+		    		for(var i=0;i<timePeriod;i++)
+		    			total+=rows[i].close;
+		    		var value = [];
+		    		value.push(index);
+		    		value.push(total/timePeriod);
+		    		index+=1;
+		    		table.push(value);
+
+		    		for(var i=timePeriod;i<rows.length;i++,index++) {
+		    			total = total + rows[i].close - rows[i-timePeriod].close;
+		    			value = [];
+		    			value.push(index);
+		    			value.push(total/200);
+		    			table.push(value);
+		    		}
+		    	}
+
+			    res.send(JSON.stringify(table));
+		   }		    
+		}
+		else
+		    console.log('Error while performing realtime stock request query.');
+	});
+});
+
+
+
+
 
 
 //GET historical stock data for chart - API
