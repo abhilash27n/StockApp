@@ -3,14 +3,20 @@ var mysql = require('mysql');
 var CronJob = require('cron').CronJob;
 var googleStocks = require('google-stocks');
 var yahooFinance = require('yahoo-finance');
+
+//Bridge API for Java-Node.js
+var java = require('java');
+//Required to locate jar files for java module
+var path = require('path');
+
 var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
-  //user   : 'root',
-  //password: 'root',
+  // user     : 'stockuser',
+  // password : 'password',
+  user   : 'root',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -166,6 +172,30 @@ router.get('/getHistoricalStockData', function(req, res, next){
 	});
 
 
+});
+
+//GET Request
+//For a given stock, get a short term prediction using Bayesian curve fitting
+router.get('/getBayesianPrediction', function(req, res, next){
+	var stockName = req.query.stock;
+
+	//Adds the jar file using absolute path
+	java.classpath.push(path.join(__dirname, "Test.jar"));
+
+	//var fs = require('fs');
+	//console.log('jar exists: ' + fs.existsSync(path.join(__dirname, "Test.jar")));
+
+	//TODO: Add the actual Bayesian predictor class here
+	var test = java.newInstanceSync('Test');
+	test.getStockMagic(stockName, function(err, data){
+		if(err)
+		{
+			console.log(err);
+			return;
+		}
+		else
+			res.send(JSON.stringify(data));
+	});
 });
 
 router.get('/histDataAdd', function(req, res){

@@ -11,13 +11,14 @@
     "cron": "^1.1.0",
     "debug": "~2.2.0",
     "express": "~4.13.1",
+    "express-session": "~1.13.0",
     "google-stocks": "^0.1.6",
     "hjs": "~0.0.6",
+    "java": "^0.6.1",
     "less-middleware": "1.0.x",
     "morgan": "~1.6.1",
     "mysql": "^2.10.2",
     "serve-favicon": "~2.3.0",
-    "yahoo-finance": "^0.2.12",
-    "express-session": "~1.13.0"
+    "yahoo-finance": "^0.2.12"
   }
 }
