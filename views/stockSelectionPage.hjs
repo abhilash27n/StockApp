@@ -23,9 +23,7 @@
   	</div>
 
     <select class="stock-selector" style='width:200px' change="stockChanged();">
-	  <option value="TSLA">Tesla</option>
-	  <option value="GOOG">Google</option>
-	  <option value="AAPL">Apple</option>
+    	<option></option>
 	</select>
 	<br>
 	<div id="realTimeStockChart" style="height: 400px; min-width: 310px"></div>
@@ -35,12 +33,16 @@
     <!--ADDING AJAX CALLS ON SUBMIT-->
     <!-- Overriding submit with ajax call-->
     <script type="text/javascript">
-	    
+
 	    $(document).ready(function() {
-		  $(".stock-selector").select2({
-		  	placeholder: "Select a stock",
-		  	allowClear: true
-		  	});
+	    	$.getJSON('http://localhost:3000/getAllStocks?user=ALL', function(data){
+	    		$(".stock-selector").select2({
+				  	data: data,
+				  	placeholder: "Select a stock",
+				  	allowClear: true
+			  	});
+	    	});
+		  	
 		});
 
 	    ///STOCK SELECTOR
