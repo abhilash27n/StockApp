@@ -13,10 +13,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  // user     : 'stockuser',
-  // password : 'password',
-  user   : 'root',
-  password: 'root',
+  user     : 'stockuser',
+  password : 'password',
+  // user   : 'root',
+  // password: 'root',
   database : 'stockSchema'
 });
 
@@ -93,6 +93,28 @@ router.get('/getAllStocks', function(req, res, next) {
 	});
 });
 
+//TO BUY OR SELL STOCK
+router.post('/buyOrSell', function(req, res, next) {
+	var user = req.body.userid;
+	var stockId = req.body.hiddenStockId;
+	var buyOrSell = req.body.hiddenBuySell;
+	var query;
+	if(buyOrSell == "buy"){
+		query = 'insert into Portfolio(stockid, userid) values("'+stockId+'","'+user+'")';
+	}else{
+		query = 'delete from Portfolio where userid = "'+user+'" and stockid = "'+stockId+'"';
+	}
+	console.log(query);
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+			console.log("Success buying/selling");
+			res.send("SUCCESS");
+		}
+		else
+		    console.log('Error while getting all stocks for: '+user);
+	});
+});
+
 
 //GET realtime stock data for chart - API
 router.get('/getRealTimeStockData', function(req, res, next){
@@ -130,8 +152,6 @@ router.get('/getRealTimeStockData', function(req, res, next){
 		else
 		    console.log('Error while performing realtime stock request query.');
 	});
-
-
 });
 
 
