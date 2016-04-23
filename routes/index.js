@@ -7,8 +7,8 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'root',
-  password : 'root',
+  user     : 'stockuser',
+  password : 'password',
   database : 'stockSchema'
 });
 
@@ -59,6 +59,24 @@ router.post('/login', function(req, res, next) {
 
 });
 
+//GET ALL Stocks
+router.get('/getAllStocks', function(req, res, next) {
+	var user = req.query.user;
+	var query;
+	if(user == "ALL"){
+		query = 'select stockid as id, stockname as text from Stocks';
+	}else{
+		query = 'select s.stockid as id, s.stockname as text from Stocks s, Portfolio p where s.stockid = p.stockid and p.userid = "'+user+'"';
+	}
+	console.log(query);
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+			res.send(JSON.stringify(rows));
+		}
+		else
+		    console.log('Error while getting all stocks for: '+user);
+	});
+});
 
 //GET realtime stock data for chart - API
 router.get('/getRealTimeStockData', function(req, res, next){
@@ -94,8 +112,8 @@ router.get('/getRealTimeStockData', function(req, res, next){
 		    
 		}
 		else
-		    console.log('Error while performing stock request query.');
-		});
+		    console.log('Error while performing realtime stock request query.');
+	});
 
 
 });
@@ -135,8 +153,8 @@ router.get('/getHistoricalStockData', function(req, res, next){
 		    
 		}
 		else
-		    console.log('Error while performing stock request query.');
-		});
+		    console.log('Error while performing historical stock request query.');
+	});
 
 
 });
@@ -206,7 +224,7 @@ router.post('/addHistoricalData', function(req, res){
 			  if (!err)
 			    console.log('Success inserting history into database');
 			  else
-			    console.log('Error while performing Query.');
+			    console.log('Error while inserting historical data.');
 			});
 	  	}
 
@@ -282,7 +300,7 @@ new CronJob('0 * * * * *', function() {
 		  			console.log("Inserted "+count/5+" times");
 		  	}
 			else
-			    console.log('Error while performing Query.');
+			    console.log('Error while inserting real time data.');
 			});
 
 		});
