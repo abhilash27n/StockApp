@@ -25,7 +25,7 @@ var count = 0;
 router.get('/', function(req, res, next) {
   console.log("The session is "+req.session.secret);
   if(req.session.secret) {
-  	res.render('stockSelectionPage',{userid: req.session.secret, username: req.session.fullName});
+  	res.render('portfolioPage',{userid: req.session.secret, username: req.session.fullName});
   }
   else{
   	res.render('login');
@@ -57,7 +57,7 @@ router.post('/login', function(req, res, next) {
   			req.session.fullName = rows[0].fullname;
   			//console.log(rows);
   			console.log("user valid");
-  			res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
+  			res.render('portfolioPage', {userid: req.session.secret, username: req.session.fullName});
   		}
   		else {
   			console.log("user invalid");
