@@ -8,6 +8,9 @@ var yahooFinance = require('yahoo-finance');
 var java = require('java');
 //Required to locate jar files for java module
 var path = require('path');
+java.classpath.push(path.join(__dirname, "../java/BayesianStockPredictor.jar"));
+java.classpath.push(path.join(__dirname, "../java/Jama-1.0.2.jar"));
+java.classpath.push(path.join(__dirname, "../java/commons-math3-3.6.jar"));
 
 var router = express.Router();
 
@@ -20,12 +23,11 @@ var connection = mysql.createConnection({
   database : 'stockSchema'
 });
 
-var count = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log("The session is "+req.session.secret);
   if(req.session.secret) {
-  	res.render('stockSelectionPage',{userid: req.session.secret, username: req.session.fullName});
+  	res.render('portfolioPage',{userid: req.session.secret, username: req.session.fullName});
   }
   else{
   	res.render('login');
@@ -57,7 +59,7 @@ router.post('/login', function(req, res, next) {
   			req.session.fullName = rows[0].fullname;
   			//console.log(rows);
   			console.log("user valid");
-  			res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
+  			res.render('portfolioPage', {userid: req.session.secret, username: req.session.fullName});
   		}
   		else {
   			console.log("user invalid");
@@ -66,6 +68,20 @@ router.post('/login', function(req, res, next) {
   	}
   });
 
+});
+
+router.get('/stockSelectionPage', function(req, res, next) {
+	if(req.session.secret=="")
+		res.render('login');
+	else
+		res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
+});
+
+router.get('/portfolioPage', function(req, res, next) {
+	if(req.session.secret=="")
+		res.render('login');
+	else
+		res.render('portfolioPage', {userid: req.session.secret, username: req.session.fullName});
 });
 
 router.get('/logout', function(req, res, next) {
@@ -303,23 +319,51 @@ router.get('/getHistoricalStockData', function(req, res, next){
 //For a given stock, get a short term prediction using Bayesian curve fitting
 router.get('/getBayesianPrediction', function(req, res, next){
 	var stockName = req.query.stock;
+	
+	var query = 'select unix_timestamp(realtime) as time, price from RealTime where stockid= "'+stockName+'" order by time desc limit 300;';
 
-	//Adds the jar file using absolute path
-	java.classpath.push(path.join(__dirname, "Test.jar"));
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    console.log("No of rows returned: "+noRows);
+		    if(noRows == 0){
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var prices = [];
 
-	//var fs = require('fs');
-	//console.log('jar exists: ' + fs.existsSync(path.join(__dirname, "Test.jar")));
+		    	for(var i = 0; i < rows.length; i++){
+		    		var price = rows[i].close;
+		    		prices.push(price);
 
-	//TODO: Add the actual Bayesian predictor class here
-	var test = java.newInstanceSync('Test');
-	test.getStockMagic(stockName, function(err, data){
-		if(err)
-		{
-			console.log(err);
-			return;
+		    	}
+
+		    	//console.log(prices[0]);
+		    	var newPrices = java.newArray("double",prices);
+		    	var BPInstance = java.newInstanceSync('BayesianStockPredictor');
+				BPInstance.getPrediction(newPrices,function(err, data){
+					if(err){
+						console.log(err);
+						return;
+					}
+					else
+					{
+						var time = rows[0].time;
+						var table = [];
+						for(var i=0; i < 60; i++)
+						{
+							var t = time + 60*(i+1);
+							table.push([t, data[i]]);
+						}
+						res.send(JSON.stringify(table));
+					}
+				});
+		   }
+		    
 		}
 		else
-			res.send(JSON.stringify(data));
+		    console.log('Error while performing realtime stock request query.');
 	});
 });
 
@@ -343,12 +387,9 @@ router.post('/addHistoricalData', function(req, res){
 	}, function (err, snapshot) {
 	  console.log("#############YAHOO FINANCE REQUEST#############");
 	  console.log(snapshot);
-
 	  var price = snapshot.lastTradePriceOnly;
 	  var volume = snapshot.volume;
-
 	  var tuple = { stockid: stockName, price: price, volume: volume };
-
 	  //INSERTING INTO DATABASE
 	   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 		  if (!err)	
@@ -356,7 +397,6 @@ router.post('/addHistoricalData', function(req, res){
 		  else
 		    console.log('Error while performing Query.');
 		});
-
 	});*/
 	//YAHOO FINANCE END
 
@@ -399,7 +439,6 @@ router.post('/addHistoricalData', function(req, res){
 	/*googleStocks.get([stockName], function(error, data) {
 	  console.log("#############GOOGLE STOCK REQUEST#############");
 	  console.log(data);
-
 	   res.send(JSON.stringify(data));
 	});*/
 	//GOOGLE STOCK END
@@ -459,9 +498,6 @@ new CronJob('0 * * * * *', function() {
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 			if (!err){
 		  		//console.log('Success inserting into database');
-		  		count++;
-		  		if(count % 5 == 0)
-		  			console.log("Inserted "+count/5+" times");
 		  	}
 			else
 			    console.log('Error while inserting real time data.');
