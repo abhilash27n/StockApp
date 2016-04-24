@@ -21,31 +21,23 @@
  	 <form id="buyOrSell" action="/buyOrSell" method="post">
 		  <input type="text" value="{{ username }}" id="username" name="username"/>
 		  <input type="text" value="{{ userid }}" id="userid" name="userid"/>
-		  <input type="text" value="" id="hiddenStockId" name="hiddenStockId"/>
-		  <input type="text" value="" id="hiddenBuySell" name="hiddenBuySell"/>
 		  <input type="submit" id="hiddenSubmitButton"/>
 	  </form>
   </div>
 
   	<div style='float: right;'>
-  		  <a href="/portfolioPage"> PortFolio Analysis </a> </br>
-  		  <a href="/logout"> Logout </a>
+  		  <a href="/stockSelectionPage"> PortFolio Management </a> </br>
+		  <a href="/logout"> Logout </a>
   	</div>
 
     <select class="stock-selector" style='width:200px' change="stockChanged();">
     	<option></option>
 	</select>
 	<br>
-	<div id="realTimeStockChart" style="height: 400px; min-width: 310px"></div>
+	<div id="realTimeWithPredictionStockChart" style="height: 400px; min-width: 310px"></div>
 	<br>
 	<div id="historicalStockChart" style="height: 400px; min-width: 310px"></div>
 	<br>
-	<div id="buyButton" style="display: none">
-		<input type="button" value="Follow Stock" id="buy" name="buy" onClick="buyOrSellStock();"/>
-	</div>
-	<div id="sellButton" style="display: none">
-		<input type="button" value="Unfollow Stock" id="sell" name="sell" onClick="buyOrSellStock();"/>
-	</div>
 
 
     <!--ADDING AJAX CALLS ON SUBMIT-->
@@ -53,72 +45,24 @@
     <script type="text/javascript">
 
 	    $(document).ready(function() {
-	    	$.getJSON('http://localhost:3000/getAllStocks?user=ALL', function(data){
+	    	var user = document.getElementById("userid").value;
+	    	$.getJSON('http://localhost:3000/getAllStocks?user='+user, function(data){
 	    		$(".stock-selector").select2({
 				  	data: data,
 				  	placeholder: "Select a stock",
 				  	allowClear: true
 			  	});
 	    	});
-		  	
-		  	$("#buyOrSell").submit(function  (e) {
-		 		e.preventDefault();
-		 		$.post("/buyOrSell",$(this).serialize(), function( data ) {
-		 			var buyOrSell = document.getElementById("hiddenBuySell").value;
-		 			if(buyOrSell == "buy"){
-		 				document.getElementById("hiddenBuySell").value = "sell";
-		 				document.getElementById("buyButton").style.display = 'none';
-		    			document.getElementById("sellButton").style.display = 'block';
-		 			}
-		 			else{
-		 				document.getElementById("hiddenBuySell").value = "buy";
-		 				document.getElementById("buyButton").style.display = 'block';
-		    			document.getElementById("sellButton").style.display = 'none';
-		 			}
-				});
-		 	});
+
 		});
 
 	    ///STOCK SELECTOR
 	    var $eventSelect = $(".stock-selector");
 	    $eventSelect.on("select2:select", function (e) { 
 	    	var selectedStock = e.params.data.id;    //or data.text
-	    	checkBuyOrSell(selectedStock);
-	    	createRealTimeChart(selectedStock);
-	    	createHistoricalChart(selectedStock);
+	    	createRealTimewWithPredictionChart(selectedStock);
 	    }); 
 
-	    //Give buy or sell button
-	    function checkBuyOrSell(selectedStock){
-	    	var user = document.getElementById("userid").value;
-	    	var stockInPortfolio = false;
-	    	$.getJSON('http://localhost:3000/getAllStocks?user='+user, function(data){
-	    		for(var i = 0; i < data.length; i++){
-	    			if(data[i].id == selectedStock){
-	    				stockInPortfolio = true;
-	    				break;
-	    			}
-	    		}
-	    		if(stockInPortfolio){
-		    		document.getElementById("buyButton").style.display = 'none';
-		    		document.getElementById("sellButton").style.display = 'block';
-		    		document.getElementById("hiddenStockId").value = selectedStock;
-		    		document.getElementById("hiddenBuySell").value = "sell";
-		    	}
-		    	else{
-		    		document.getElementById("buyButton").style.display = 'block';
-		    		document.getElementById("sellButton").style.display = 'none';
-		    		document.getElementById("hiddenStockId").value = selectedStock;
-		    		document.getElementById("hiddenBuySell").value = "buy";
-
-		    	}
-	    	});	    	
-	    }
-
-	    //function submit buy or sell
-	    function buyOrSellStock(){
-	    	document.getElementById("hiddenSubmitButton").click();
-	    }
 
 	    //STOCK CHART
 	    // Load the fonts
@@ -330,82 +274,84 @@
 		//CHART DESIGN END
 		// Apply the theme
 		Highcharts.setOptions(Highcharts.theme);
-	    function createRealTimeChart (selectedStock) {
-		    $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+selectedStock, function (data) {
+	    function createRealTimewWithPredictionChart(selectedStock) {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        name = selectedStock;
 
-		        // Create the chart
-		        $('#realTimeStockChart').highcharts('StockChart', {
+		    /**
+		     * Create the chart when all data is loaded
+		     * @returns {undefined}
+		     */
+		    function createChart() {
 
-		            rangeSelector : {
-		                selected : 1
+		        $('#realTimeWithPredictionStockChart').highcharts('StockChart', {
+
+		            rangeSelector: {
+		                selected: 4
 		            },
 
-		            title : {
-		                text : selectedStock + ' Real Time Stock Price'
-		            },
-
-		            series : [{
-		                name : selectedStock + ' Stock Price',
-		                data : data,
-		                type : 'area',
-		                threshold : null,
-		                tooltip : {
-		                    valueDecimals : 2
+		            yAxis: {
+		                labels: {
+		                    formatter: function () {
+		                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+		                    }
 		                },
-		                fillColor : {
-		                    linearGradient : {
-		                        x1: 0,
-		                        y1: 0,
-		                        x2: 0,
-		                        y2: 1
-		                    },
-		                    stops : [
-		                        [0, Highcharts.getOptions().colors[0]],
-		                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-		                    ]
-		                }
-		            }]
-		        });
-		    });
-		}
-
-		function createHistoricalChart (selectedStock) {
-		    $.getJSON('http://localhost:3000/getHistoricalStockData?stock='+selectedStock, function (data) {
-
-		        // Create the chart
-		        $('#historicalStockChart').highcharts('StockChart', {
-
-		            rangeSelector : {
-		                selected : 1
+		                plotLines: [{
+		                    value: 0,
+		                    width: 2,
+		                    color: 'silver'
+		                }]
 		            },
 
-		            title : {
-		                text : selectedStock + ' Historical Stock Price'
+		            plotOptions: {
+		                series: {
+		                    compare: 'percent'
+		                }
 		            },
 
-		            series : [{
-		                name : selectedStock + ' Stock Price',
-		                data : data,
-		                type : 'area',
-		                threshold : null,
-		                tooltip : {
-		                    valueDecimals : 2
-		                },
-		                fillColor : {
-		                    linearGradient : {
-		                        x1: 0,
-		                        y1: 0,
-		                        x2: 0,
-		                        y2: 1
-		                    },
-		                    stops : [
-		                        [0, Highcharts.getOptions().colors[0]],
-		                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-		                    ]
-		                }
-		            }]
+		            tooltip: {
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+		                valueDecimals: 2
+		            },
+
+		            series: seriesOptions
 		        });
-		    });
+		    }
+
+
+	        $.getJSON('http://localhost:3000/getHistoricalStockData?stock='+name,    function (data) {
+
+	            seriesOptions[0] = {
+	                name: name + " ACTUAL STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+
+	        $.getJSON('http://localhost:3000/getHistoricalStockData?stock=GOOG',    function (data) {
+
+	            seriesOptions[1] = {
+	                name: name + " PREDICTED STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+	    
 		}
 
 
