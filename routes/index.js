@@ -13,14 +13,13 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  // user     : 'stockuser',
-  // password : 'password',
-  user   : 'root',
-  password: 'root',
+  user     : 'stockuser',
+  password : 'password',
+  // user   : 'root',
+  // password: 'root',
   database : 'stockSchema'
 });
 
-var count = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log("The session is "+req.session.secret);
@@ -473,9 +472,6 @@ new CronJob('0 * * * * *', function() {
 		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
 			if (!err){
 		  		//console.log('Success inserting into database');
-		  		count++;
-		  		if(count % 5 == 0)
-		  			console.log("Inserted "+count/5+" times");
 		  	}
 			else
 			    console.log('Error while inserting real time data.');
