@@ -334,7 +334,7 @@ router.get('/getBayesianPrediction', function(req, res, next){
 		    	var prices = [];
 
 		    	for(var i = 0; i < rows.length; i++){
-		    		var price = rows[i].close;
+		    		var price = rows[i].price;
 		    		prices.push(price);
 
 		    	}
@@ -353,7 +353,7 @@ router.get('/getBayesianPrediction', function(req, res, next){
 						var table = [];
 						for(var i=0; i < 60; i++)
 						{
-							var t = time + 60*(i+1);
+							var t = (time + 60*(i+1))*1000;
 							table.push([t, data[i]]);
 						}
 						res.send(JSON.stringify(table));

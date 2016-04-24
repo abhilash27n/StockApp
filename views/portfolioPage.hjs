@@ -320,7 +320,7 @@
 		    }
 
 
-	        $.getJSON('http://localhost:3000/getHistoricalStockData?stock='+name,    function (data) {
+	        $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+name,    function (data) {
 
 	            seriesOptions[0] = {
 	                name: name + " ACTUAL STOCK DATA",
@@ -336,7 +336,7 @@
 	            }
 	        });
 
-	        $.getJSON('http://localhost:3000/getHistoricalStockData?stock=GOOG',    function (data) {
+	        $.getJSON('http://localhost:3000/getBayesianPrediction?stock='+name,    function (data) {
 
 	            seriesOptions[1] = {
 	                name: name + " PREDICTED STOCK DATA",
