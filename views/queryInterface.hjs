@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Query Interface</title>
+</head>
+<body>
+<div>  
+   <div id="thumbnail">
+    <h3>Click on the query to see the result</h3>
+    <ul>
+      <li>
+        <a href="/queryInterface?q=1">Show the list of all companies in the database along with their latest stock price.</a>
+      </li>
+      <li>
+        <a href="/queryInterface?q=2">Get the highest stock price of Google in the last ten days</a>
+      </li>
+      <li>
+        <a href="/queryInterface?q=3">Average stock price of Microsoft - (to be changed from GOOG) in the latest one year</a>
+      </li>
+      <li>
+        <a href="/queryInterface?q=4">Lowest stock price for each company in the latest one year. </a>
+      </li>
+      <li>
+        <a href="/queryInterface?q=5">List the ids of companies along with their name who have the average stock price lesser than the lowest of Google in the latest one year. </a>
+      </li>
+   </div> 
+   <div id="large">{{{ result }}}</div>   
+<div id="background"></div>
+</div>
+</body>
+</html>

@@ -16,10 +16,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
-  // user   : 'root',
-  // password: 'root',
+  // user     : 'stockuser',
+  // password : 'password',
+  user   : 'root',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -314,6 +314,126 @@ router.get('/getHistoricalStockData', function(req, res, next){
 
 
 });
+
+
+// For Query Interface
+router.get('/queryInterface', function(req, res, next) {
+	//console.log(req.query);
+	if(req.query.q==undefined)
+		res.render('queryInterface');
+	else {
+		console.log(req.query.q);
+		if(req.query.q==1) {
+			query = "select A.stockname, B.price, MAX(B.realtime) from Stocks A, RealTime B where A.stockid=B.stockid group by A.stockid;";
+			connection.query(query, function(err, rows, fields) {
+				if(err) {
+					// Say user invalid in Login Page
+					console.log("Some Login Error, Check Database Config.");
+				}
+				else {
+					var str = "";
+					for(var i=0;i<rows.length;i++) {
+						str += "Stock Name: " + rows[i].stockname + "</br>";
+						str += "Price: "+ rows[i].price + "</br>";
+						str += "=====================================</br>";
+					}
+					//console.log(str);
+					res.render('queryInterface', {result: str});
+				}
+		  		});
+		}
+
+		else if(req.query.q==2) {
+			query = "select stockid, MAX(high) as price, histtime from Historical where histtime >= DATE_ADD(CURDATE(), INTERVAL -10 DAY) group by stockid having stockid='GOOG'";
+			connection.query(query, function(err, rows, fields) {
+				if(err) {
+					// Say user invalid in Login Page
+					console.log("Some Login Error, Check Database Config.");
+				}
+				else {
+					var str = "";
+					for(var i=0;i<rows.length;i++) {
+						str += "The highest stock price of Google in the last ten days </br>";
+						str += "Price: "+ rows[i].price + "</br>";
+						str += "=====================================</br>";
+					}
+					//console.log(str);
+					res.render('queryInterface', {result: str});
+				}
+		  		});
+		}
+
+
+		else if(req.query.q==3) {
+			query = "select stockid, AVG((high+low)/2) as price from Historical where histtime >= DATE_ADD(CURDATE(), INTERVAL - 1 YEAR) group by stockid having stockid='GOOG'";
+			connection.query(query, function(err, rows, fields) {
+				if(err) {
+					// Say user invalid in Login Page
+					console.log("Some Login Error, Check Database Config.");
+				}
+				else {
+					var str = "";
+					for(var i=0;i<rows.length;i++) {
+						str += "Average stock price of (Microsoft) Google in the latest one year </br>";
+						str += "Price: "+ rows[i].price + "</br>";
+						str += "=====================================</br>";
+					}
+					res.render('queryInterface', {result: str});
+				}
+		  		});
+		}
+
+		else if(req.query.q==4) {
+			query = "select stockid, MIN(low) as price from Historical where histtime >= DATE_ADD(CURDATE(), INTERVAL - 1 YEAR) group by stockid";
+			connection.query(query, function(err, rows, fields) {
+				if(err) {
+					// Say user invalid in Login Page
+					console.log("Some Login Error, Check Database Config.");
+				}
+				else {
+					var str = "Lowest stock price for each company in the latest one year </br>";
+					for(var i=0;i<rows.length;i++) {
+						str += "Stock ID: " + rows[i].stockid + "</br>";
+						str += "Price: "+ rows[i].price + "</br>";
+						str += "=====================================</br>";
+
+					}
+					//console.log(str);
+					res.render('queryInterface', {result: str});
+				}
+		  		});
+		}
+
+		else if(req.query.q==5) {
+			query = "select B.stockid as stockid, A.stockname as stockname, AVG((high+low)/2) as avgprice from Stocks A, Historical B \
+				where A.stockid=B.stockid and B.histtime >= DATE_ADD(CURDATE(), INTERVAL - 1 YEAR) group by B.stockid having avgprice < \
+				(select MIN(low) from Historical where histtime >= DATE_ADD(CURDATE(), INTERVAL - 1 YEAR) group by stockid having stockid='GOOG')";
+			connection.query(query, function(err, rows, fields) {
+				if(err) {
+					// Say user invalid in Login Page
+					console.log("Some Login Error, Check Database Config.");
+				}
+				else {
+					var str = "";
+					for(var i=0;i<rows.length;i++) {
+						str += "Stock ID: " + rows[i].stockid + "</br>";
+						str += "Stock Name: " + rows[i].stockname + "</br>";
+						str += "Price: "+ rows[i].avgprice + "</br>";
+						str += "=====================================</br>";					}
+					//console.log(str);
+					res.render('queryInterface', {result: str});
+				}
+		  		});
+		}
+
+
+
+	}
+});
+
+
+
+
 
 //GET Request
 //For a given stock, get a short term prediction using Bayesian curve fitting
