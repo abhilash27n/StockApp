@@ -1,8 +1,20 @@
 <html>
 <head>
-<title>Query Interface</title>
+<title>Aviato - Query Interface</title>
+<!-- for menu bar -->
+  <link rel='stylesheet' href='/stylesheets/style.css'/>
+  <link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
+  <script src="../javascripts/script-menu.js"></script>
 </head>
 <body>
+  <div id='cssmenu'>
+  <ul>
+     <li><a href='/portfolioPage'><span>Portfolio Analysis</span></a></li>
+     <li><a href='/stockSelectionPage'><span>Portfolio Management</span></a></li>
+     <li class='active'><a href='#'><span>Query Interface</span></a></li>
+     <li class='last'><a href='/logout'><span>Logout</span></a></li>
+  </ul>
+  </div>
 <div>  
    <div id="thumbnail">
     <h3>Click on the query to see the result</h3>

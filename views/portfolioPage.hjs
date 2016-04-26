@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Welcome to Stock App</title>
+    <title>Aviato - Portfolio Page</title>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <link rel="stylesheet"  href="/stylesheets/select2.css"/>
 	
+	<!-- for menu bar -->
+	<link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
+	<script src="../javascripts/script-menu.js"></script>
     <!--for ajax and selectable stuff-->
     <script src="../javascripts/jquery-1.10.2.js"></script>
     <script src="../javascripts/select2.js"></script>
@@ -14,7 +17,15 @@
 	<script src="../javascripts/Highstock-4.2.4/js/modules/exporting.js"></script>
   </head>
   <body>
-  <h1>STOCK APP - Welcome, {{ username }}</h1>
+  <div id='cssmenu'>
+	<ul>
+	   <li class='active'><a href='#'><span>Portfolio Analysis</span></a></li>
+	   <li><a href='/stockSelectionPage'><span>Portfolio Management</span></a></li>
+	   <li><a href='/queryInterface'><span>Query Interface</span></a></li>
+	   <li class='last'><a href='/logout'><span>Logout</span></a></li>
+	</ul>
+	</div>
+  <h1>Welcome, {{ username }}</h1>
 
   <!-- HIDDEN DIV TO STORE USER NAME AND USER ID and also for selling or buying stock-->
   <div id="hiddenTextFields" style="display: none;">
@@ -24,11 +35,6 @@
 		  <input type="submit" id="hiddenSubmitButton"/>
 	  </form>
   </div>
-
-  	<div style='float: right;'>
-  		  <a href="/stockSelectionPage"> PortFolio Management </a> </br>
-		  <a href="/logout"> Logout </a>
-  	</div>
 
     <select class="stock-selector" style='width:200px' >
     	<option></option>
