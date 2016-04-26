@@ -349,7 +349,7 @@
 		            yAxis: {
 		                labels: {
 		                    formatter: function () {
-		                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+		                        return (this.value > 0 ? ' + ' : '') + this.value;
 		                    }
 		                },
 		                plotLines: [{
@@ -361,7 +361,7 @@
 
 		            plotOptions: {
 		                series: {
-		                    compare: 'percent'
+		                    compare: 'undefined'
 		                }
 		            },
 
@@ -370,7 +370,8 @@
 		            },
 
 		            tooltip: {
-		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y} USD</b> ({point.change} USD)<br/>',
+		                changeDecimals: 2,
 		                valueDecimals: 2
 		            },
 
@@ -433,7 +434,7 @@
 		            yAxis: {
 		                labels: {
 		                    formatter: function () {
-		                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+		                        return (this.value > 0 ? ' + ' : '') + this.value;
 		                    }
 		                },
 		                plotLines: [{
@@ -445,7 +446,7 @@
 
 		            plotOptions: {
 		                series: {
-		                    compare: 'percent'
+		                    compare: 'undefined'
 		                }
 		            },
 
@@ -454,7 +455,8 @@
 		            },
 
 		            tooltip: {
-		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y} USD</b> ({point.change} USD)<br/>',
+		                changeDecimals: 2,
 		                valueDecimals: 2
 		            },
 
