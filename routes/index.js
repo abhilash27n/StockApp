@@ -16,10 +16,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  // user     : 'stockuser',
-  // password : 'password',
-  user   : 'root',
-  password: 'root',
+  user     : 'stockuser',
+  password : 'password',
+  // user   : 'root',
+  // password: 'root',
   database : 'stockSchema'
 });
 
@@ -220,8 +220,9 @@ router.get('/onBalanceVolume', function(req, res, next){
 //GET Simple Moving Average for Chart - API
 router.get('/simpleMovingAverage', function(req, res, next){
 	var stockName = req.query.stock;
+	var timePeriod = req.query.timePeriod;
 	//var timePeriod = req.query.period;
-	var timePeriod = 50; // Most Commonly used
+	//var timePeriod = 50; // Most Commonly used
 	//TODO - ERROR CHECKING
 	//console.log("Stock Id: "+stockName);
 	var query = 'select unix_timestamp(histtime) as time, close from Historical where stockid= "'+ stockName +'" order by histtime LIMIT 400';
@@ -240,22 +241,22 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    	var table = [];
 		    	var movAvg = 0;
 		    	var total = 0;
-		    	var index = 0;
 		    	
 		    	if(rows.length>timePeriod) {
 		    		for(var i=0;i<timePeriod;i++)
 		    			total+=rows[i].close;
 		    		var value = [];
-		    		value.push(index);
+		    		
+		    		value.push(rows[i].time);
 		    		value.push(total/timePeriod);
-		    		index+=1;
+		    		
 		    		table.push(value);
 
-		    		for(var i=timePeriod;i<rows.length;i++,index++) {
+		    		for(var i=timePeriod;i<rows.length;i++) {
 		    			total = total + rows[i].close - rows[i-timePeriod].close;
 		    			value = [];
-		    			value.push(index);
-		    			value.push(total/200);
+		    			value.push(rows[i].time);
+		    			value.push(total/timePeriod);
 		    			table.push(value);
 		    		}
 		    	}
@@ -267,6 +268,7 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    console.log('Error while performing realtime stock request query.');
 	});
 });
+
 
 
 //GET historical stock data for chart - API
