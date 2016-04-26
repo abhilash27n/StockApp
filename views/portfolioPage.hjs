@@ -34,16 +34,20 @@
     	<option></option>
 	</select>
 
-	<table width="75%" style="">
+
+	<table width="100%" style="">
 
 	<tr>
-		<td width="50%" align="center">
-			<div id="realTimeWithPredictionStockChart" style="height: 400px; min-width: 310px; margin: 20px">
+		<td width="37.5%" align="center">
+			<div id="realTimeWithPredictionStockChart" style="height: 400px; width: 100%;">
 			</div>
 		</td>
-		<td width="50%" align="center">
-			<div id="historicalWithPredictionStockChart" style="height: 400px; min-width: 310px">
+		<td width="37.5%" align="center">
+			<div id="historicalWithPredictionStockChart" style="height: 400px; width: 100%">
 			</div>
+		</td>
+		<td width="25%" align="center">
+			<a class="twitter-timeline" href="https://twitter.com/NASDAQ" data-widget-id="725003621507682304">Tweets by @NASDAQ</a>
 		</td>
 	</tr>
 	<tr>
@@ -58,7 +62,9 @@
 	</tr>
 	</table>
 
-
+ 	<!--Twitter Script-->
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+   
     <!--ADDING AJAX CALLS ON SUBMIT-->
     <!-- Overriding submit with ajax call-->
     <script type="text/javascript">
