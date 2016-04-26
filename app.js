@@ -28,7 +28,8 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // For Session
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 86400000 }}));
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 86400000 }, saveUninitialized: true,
+                 resave: true}));
 
 
 app.use('/', routes);

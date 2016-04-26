@@ -16,10 +16,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
-  // user   : 'root',
-  // password: 'root',
+  // user     : 'stockuser',
+  // password : 'password',
+  user   : 'root',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -32,7 +32,6 @@ router.get('/', function(req, res, next) {
   else{
   	res.render('login');
   } 
-  	
 });
 
 router.post('/login', function(req, res, next) {
@@ -218,7 +217,6 @@ router.get('/onBalanceVolume', function(req, res, next){
 });
 
 
-
 //GET Simple Moving Average for Chart - API
 router.get('/simpleMovingAverage', function(req, res, next){
 	var stockName = req.query.stock;
@@ -269,10 +267,6 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    console.log('Error while performing realtime stock request query.');
 	});
 });
-
-
-
-
 
 
 //GET historical stock data for chart - API
@@ -573,57 +567,67 @@ router.post('/addHistoricalData', function(req, res){
 //TODO - fix calling when stocks are closed(duplicate check or something)
 new CronJob('0 * * * * *', function() {
 
-	console.log("CALLING STOCK EVERY MINUTE");	
-    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
+	var now = new Date();
+	var hour = now.getHours();
+	var min = now.getMinutes();
+	var day = now.getDay();
 
-	for(var i = 0; i < stockNames.length; i++){
-	  //YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
-		yahooFinance.snapshot({
-		  symbol: stockNames[i],
-		  fields: ['s', 'd1', 't1', 'l1', 'v'],
-		}, function (err, snapshot) {
-		  //console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
-		  //console.log(snapshot);
+	//console.log(day + " " + hour + " " + min);
+	var check = (day>=1 && day<=5) && (hour>=9 && hour<17);
+	console.log(check);
+	if(check) {
+		console.log("CALLING STOCK EVERY MINUTE");	
+	    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
 
-		  var price = snapshot.lastTradePriceOnly;
-		  var volume = snapshot.volume;
-		  var symbol = snapshot.symbol;
-		  var date = snapshot.lastTradeDate;
-		  var time = snapshot.lastTradeTime;
+		for(var i = 0; i < stockNames.length; i++){
+		  //YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/
+			yahooFinance.snapshot({
+			  symbol: stockNames[i],
+			  fields: ['s', 'd1', 't1', 'l1', 'v'],
+			}, function (err, snapshot) {
+			  //console.log("#############YAHOO FINANCE REQUEST FROM SCHEDULER#############");
+			  //console.log(snapshot);
 
-		  if(time.slice(-2)=='am'){
-		  	if(time.split(':') == "12"){
-		  		date.setHours(parseInt(time.split(':')[0]) + 12);	
-		  	}
-		  	else{
-		  		date.setHours(parseInt(time.split(':')[0]));
-		  	}
-		  }
-		  else{
-		  	if(time.split(':') == "12"){
-		  		date.setHours(parseInt(time.split(':')[0]));
-		  	}
-		  	else{
-		  		date.setHours(parseInt(time.split(':')[0]) + 12);	
-		  	}
-		  }
-		  
-		  //converting string time into database datetime
-		  date.setMinutes(parseInt(time.split(':')[1].slice(0,2)));
+			  var price = snapshot.lastTradePriceOnly;
+			  var volume = snapshot.volume;
+			  var symbol = snapshot.symbol;
+			  var date = snapshot.lastTradeDate;
+			  var time = snapshot.lastTradeTime;
+
+			  if(time.slice(-2)=='am'){
+			  	if(time.split(':') == "12"){
+			  		date.setHours(parseInt(time.split(':')[0]) + 12);	
+			  	}
+			  	else{
+			  		date.setHours(parseInt(time.split(':')[0]));
+			  	}
+			  }
+			  else{
+			  	if(time.split(':') == "12"){
+			  		date.setHours(parseInt(time.split(':')[0]));
+			  	}
+			  	else{
+			  		date.setHours(parseInt(time.split(':')[0]) + 12);	
+			  	}
+			  }
+			  
+			  //converting string time into database datetime
+			  date.setMinutes(parseInt(time.split(':')[1].slice(0,2)));
 
 
-		  var tuple = { stockid: symbol, price: price, volume: volume, realtime: date };
-		  //console.log(tuple);
-		  //INSERTING INTO DATABASE
-		   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
-			if (!err){
-		  		//console.log('Success inserting into database');
-		  	}
-			else
-			    console.log('Error while inserting real time data.');
+			  var tuple = { stockid: symbol, price: price, volume: volume, realtime: date };
+			  //console.log(tuple);
+			  //INSERTING INTO DATABASE
+			   connection.query('INSERT INTO RealTime SET ?', tuple, function(err, res) {
+				if (!err){
+			  		//console.log('Success inserting into database');
+			  	}
+				else
+				    console.log('Error while inserting real time data.');
+				});
+
 			});
-
-		});
+		}
 	}
 	//YAHOO FINANCE END
 }, null, true, 'America/New_York');
