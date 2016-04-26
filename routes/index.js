@@ -34,6 +34,10 @@ router.get('/', function(req, res, next) {
   } 
 });
 
+router.get('/login', function(req, res, next) {
+	res.render('login');
+});
+
 router.post('/login', function(req, res, next) {
   var userid = req.body.userid;
   var pswd = req.body.pswd;
@@ -70,14 +74,14 @@ router.post('/login', function(req, res, next) {
 });
 
 router.get('/stockSelectionPage', function(req, res, next) {
-	if(req.session.secret=="")
+	if(req.session.secret=="" || req.session.secret==undefined)
 		res.render('login');
 	else
 		res.render('stockSelectionPage', {userid: req.session.secret, username: req.session.fullName});
 });
 
 router.get('/portfolioPage', function(req, res, next) {
-	if(req.session.secret=="")
+	if(req.session.secret=="" || req.session.secret==undefined)
 		res.render('login');
 	else
 		res.render('portfolioPage', {userid: req.session.secret, username: req.session.fullName});
@@ -619,7 +623,7 @@ new CronJob('0 * * * * *', function() {
 
 	//console.log(day + " " + hour + " " + min);
 	var check = (day>=1 && day<=5) && (hour>=9 && hour<17);
-	console.log(check);
+	//console.log(check);
 	if(check) {
 		console.log("CALLING STOCK EVERY MINUTE");	
 	    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
