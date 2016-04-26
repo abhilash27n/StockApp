@@ -16,10 +16,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  user     : 'stockuser',
-  password : 'password',
-  // user   : 'root',
-  // password: 'root',
+  // user     : 'stockuser',
+  // password : 'password',
+  user   : 'root',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -268,6 +268,49 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    console.log('Error while performing realtime stock request query.');
 	});
 });
+
+
+
+//GET OHLC Average for Chart - API
+router.get('/ohlcAverage', function(req, res, next){
+	var stockName = req.query.stock;
+	//var timePeriod = req.query.period;
+	var timePeriod = 50; // Most Commonly used
+	//TODO - ERROR CHECKING
+	//console.log("Stock Id: "+stockName);
+	var query = 'select unix_timestamp(histtime) as time, (high + low + open + close)/4 as ohlc from Historical where stockid= "'+ stockName +'"';
+	connection.query(query, function(err, rows, fields) {
+		if (!err){
+		    noRows = rows.length;
+		    
+		    //console.log("No of songs returned: "+no_songs);
+		    if(noRows == 0){
+		    	//No songs returned
+		    	res.send(JSON.stringify("NoRowsReturned"));
+		    }
+		    else{
+		    	var open = "?(";
+		    	var table = [];
+		    	var movAvg = 0;
+		    	var total = 0;
+
+	    		for(var i=0;i<rows.length;i++) {
+	    			var value = [];
+	    			value.push(rows[i].time);
+	    			value.push(rows[i].ohlc);
+	    			table.push(value);
+	    		}
+		   
+		    }
+
+			res.send(JSON.stringify(table));
+		}		    
+	
+		else
+		    console.log('Error while performing realtime stock request query.');
+		});
+});
+
 
 
 
