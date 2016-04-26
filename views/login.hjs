@@ -1,16 +1,82 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Stock Application</title>
+    <title>Aviato - Login</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+ 
+  <style> 
+  .textbox {
+      height: 25px;
+      width: 200px;
+      border: solid 1px #E5E5E5;
+      outline: 0;
+      font: normal 13px/100% Verdana, Tahoma, sans-serif;
+      background: #FFFFFF url('bg_form.png') left top repeat-x;
+      background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+      background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+      box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+      -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+      -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+  }
+
+  .textbox:focus {
+      border-color: #C9C9C9;
+      -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 8px;
+  }   
+  .button {
+   border-top: 1px solid #96d1f8;
+   background: #65a9d7;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+   background: -o-linear-gradient(top, #3e779d, #65a9d7);
+   padding: 5px 10px;
+   -webkit-border-radius: 8px;
+   -moz-border-radius: 8px;
+   border-radius: 8px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: white;
+   font-size: 14px;
+   font-family: Georgia, serif;
+   text-decoration: none;
+   vertical-align: middle;
+   }
+.button:hover {
+   border-top-color: #28597a;
+   background: #28597a;
+   color: #ccc;
+   }
+.button:active {
+   border-top-color: #1b435e;
+   background: #1b435e;
+   }
+  </style> 
+
   </head>
-  <body>
-    <h1>Stock Application Sign-in</h1>
+   <body background="../images/Bg.jpeg" style="color:#DDDDDD; background-attachment: fixed; background-size: 100%; ">
+    <img style="height:100px" src="../images/title.png">
+    <h1 style="padding-left: 300px">Stock Analysis</h1>
     <form action="/login" method="post">
-            Username<input type="text" name="userid" id="userid"/>
-            Password<input type="password" name="pswd" id="pswd"/>
-            <input type="submit" value="Login"/>
-            <input type="reset" value="Cancel"/>
+
+      <table>
+        <tr>
+          <td><b>Username</b></td>
+          <td><input class="textbox" type="text" name="userid" id="userid"/></td>
+        </tr>
+        <tr>
+          <td><b>Password</b></td>
+          <td><input class="textbox" type="password" name="pswd" id="pswd"/></td>
+        </tr>
+        <tr height="10px"></tr>
+        <tr>
+          <td><input class="button" type="submit" value="Login"/></td>
+          <td><input class="button" type="reset" value="Cancel"/></td>
+        </tr>
+      </table>
     </form>
 
 
