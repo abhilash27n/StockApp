@@ -16,10 +16,10 @@ var router = express.Router();
 
 var connection = mysql.createConnection({
   host     : 'localhost',
-  // user     : 'stockuser',
-  // password : 'password',
-  user   : 'root',
-  password: 'root',
+  user     : 'stockuser',
+  password : 'password',
+  // user   : 'root',
+  // password: 'root',
   database : 'stockSchema'
 });
 

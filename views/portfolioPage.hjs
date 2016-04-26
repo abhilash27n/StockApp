@@ -30,14 +30,33 @@
 		  <a href="/logout"> Logout </a>
   	</div>
 
-    <select class="stock-selector" style='width:200px' change="stockChanged();">
+    <select class="stock-selector" style='width:200px' >
     	<option></option>
 	</select>
-	<br>
-	<div id="realTimeWithPredictionStockChart" style="height: 400px; min-width: 310px"></div>
-	<br>
-	<div id="historicalStockChart" style="height: 400px; min-width: 310px"></div>
-	<br>
+
+	<table width="75%" style="">
+
+	<tr>
+		<td width="50%" align="center">
+			<div id="realTimeWithPredictionStockChart" style="height: 400px; min-width: 310px; margin: 20px">
+			</div>
+		</td>
+		<td width="50%" align="center">
+			<div id="historicalWithPredictionStockChart" style="height: 400px; min-width: 310px">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td width="50%" id="indiSelect" style="display:none;">
+		<select class="indicator-selector" style='display: none; width:200px'>
+    		<option value="onBalanceVolume">On Balance Volume</option>
+    		<option value="simpleMovingAverage">Simple Moving Average</option>
+    		
+		</select>
+		<div id="indicatorChart" style="height: 400px; min-width: 310px">
+		</td>
+	</tr>
+	</table>
 
 
     <!--ADDING AJAX CALLS ON SUBMIT-->
@@ -53,14 +72,30 @@
 				  	allowClear: true
 			  	});
 	    	});
-
+	    	$(".indicator-selector").select2({
+			  	placeholder: "Select an Indicator",
+			  	allowClear: true
+		  	});
 		});
-
+	    var selectedStock;
 	    ///STOCK SELECTOR
 	    var $eventSelect = $(".stock-selector");
 	    $eventSelect.on("select2:select", function (e) { 
-	    	var selectedStock = e.params.data.id;    //or data.text
-	    	createRealTimewWithPredictionChart(selectedStock);
+	    	selectedStock = e.params.data.id;    //or data.text
+	    	createRealTimeWithPredictionChart(selectedStock);
+	    	createHistoricalWithPredictionChart(selectedStock);
+	    	document.getElementById("indiSelect").style.display = "block";
+	    	createOnBalanceMovingAverageChart(selectedStock);
+	    }); 
+
+	    //Indicator Selector
+	    var $indicatorEventSelect = $(".indicator-selector");
+	    $indicatorEventSelect.on("select2:select", function (e) { 
+	    	var selectedIndicator = e.params.data.id;    //or data.text
+	    	if(selectedIndicator == "simpleMovingAverage")
+	    		createSimpleMovingAverageChart(selectedStock);
+	    	if(selectedIndicator == "onBalanceVolume")
+	    		createOnBalanceMovingAverageChart(selectedStock);
 	    }); 
 
 
@@ -274,7 +309,7 @@
 		//CHART DESIGN END
 		// Apply the theme
 		Highcharts.setOptions(Highcharts.theme);
-	    function createRealTimewWithPredictionChart(selectedStock) {
+	    function createRealTimeWithPredictionChart(selectedStock) {
 		    var seriesOptions = [],
 		        seriesCounter = 0,
 		        name = selectedStock;
@@ -308,6 +343,10 @@
 		                series: {
 		                    compare: 'percent'
 		                }
+		            },
+
+		            title : {
+		                text : selectedStock + ' Real Time With Prediction'
 		            },
 
 		            tooltip: {
@@ -354,6 +393,117 @@
 	    
 		}
 
+		function createHistoricalWithPredictionChart(selectedStock) {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        name = selectedStock;
+
+		    /**
+		     * Create the chart when all data is loaded
+		     * @returns {undefined}
+		     */
+		    function createChart() {
+
+		        $('#historicalWithPredictionStockChart').highcharts('StockChart', {
+
+		            rangeSelector: {
+		                selected: 4
+		            },
+
+		            yAxis: {
+		                labels: {
+		                    formatter: function () {
+		                        return (this.value > 0 ? ' + ' : '') + this.value + '%';
+		                    }
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 2,
+		                    color: 'silver'
+		                }]
+		            },
+
+		            plotOptions: {
+		                series: {
+		                    compare: 'percent'
+		                }
+		            },
+
+		            title : {
+		                text : selectedStock + ' Historical With Prediction'
+		            },
+
+		            tooltip: {
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+		                valueDecimals: 2
+		            },
+
+		            series: seriesOptions
+		        });
+		    }
+
+
+	        $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+name,    function (data) {
+
+	            seriesOptions[0] = {
+	                name: name + " ACTUAL STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+
+	        $.getJSON('http://localhost:3000/getBayesianPrediction?stock='+name,    function (data) {
+
+	            seriesOptions[1] = {
+	                name: name + " PREDICTED STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+	    
+		}
+
+
+		function createOnBalanceMovingAverageChart(selectedStock) {
+
+		    $.getJSON('http://localhost:3000/onBalanceVolume?stock='+selectedStock, function (data) {
+		        // Create the chart
+		        $('#indicatorChart').highcharts('StockChart', {
+
+
+		            rangeSelector : {
+		                selected : 1
+		            },
+
+		            title : {
+		                text : selectedStock+ ' On Balance Volume'
+		            },
+
+		            series : [{
+		                name : selectedStock,
+		                data : data,
+		                tooltip: {
+		                    valueDecimals: 2
+		                }
+		            }]
+		        });
+		    });
+
+		}
 
     </script>
 
