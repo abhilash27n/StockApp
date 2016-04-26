@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
+   <meta charset='utf-8'>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Aviato - Portfolio Page</title>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <link rel="stylesheet"  href="/stylesheets/select2.css"/>
 	
 	<!-- for menu bar -->
 	<link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
-	<script src="../javascripts/script-menu.js"></script>
+
     <!--for ajax and selectable stuff-->
     <script src="../javascripts/jquery-1.10.2.js"></script>
     <script src="../javascripts/select2.js"></script>
@@ -92,6 +95,7 @@
 			  	placeholder: "Select an Indicator",
 			  	allowClear: true
 		  	});
+		  	$('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
 		});
 	    var selectedStock;
 	    ///STOCK SELECTOR

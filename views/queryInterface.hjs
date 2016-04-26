@@ -4,7 +4,7 @@
 <!-- for menu bar -->
   <link rel='stylesheet' href='/stylesheets/style.css'/>
   <link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
-  <script src="../javascripts/script-menu.js"></script>
+  <script src="../javascripts/jquery-1.10.2.js"></script>
 </head>
 <body>
   <div id='cssmenu'>
@@ -38,5 +38,13 @@
    <div id="large">{{{ result }}}</div>   
 <div id="background"></div>
 </div>
+
+ <script type="text/javascript">
+
+      $(document).ready(function() {
+        $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
+    });
+
+</script>
 </body>
 </html>

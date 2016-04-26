@@ -7,7 +7,7 @@
 	
 	<!-- for menu bar -->
 	<link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
-	<script src="../javascripts/script-menu.js"></script>
+
     <!--for ajax and selectable stuff-->
     <script src="../javascripts/jquery-1.10.2.js"></script>
     <script src="../javascripts/select2.js"></script>
@@ -82,6 +82,8 @@
 		 			}
 				});
 		 	});
+
+		 	 $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
 		});
 
 	    ///STOCK SELECTOR
