@@ -48,7 +48,7 @@ COMMIT;
 # Initial Setup
 insert into Stocks values("GOOG", "Google");
 insert into Stocks values("YHOO", "Yahoo");
-insert into Stocks values("TSLA", "Telsa");
+insert into Stocks values("TSLA", "Tesla");
 insert into Stocks values("FB", "Facebook");
 insert into Stocks values("AAPL", "Apple");
 
