@@ -39,15 +39,19 @@
 	  </form>
   </div>
 
-    <select class="stock-selector" style='width:200px' >
-    	<option></option>
-	</select>
+  	<div style="width: 25%; float: right; margin-top: 73px;">
+	<a class="twitter-timeline" href="https://twitter.com/NASDAQ" data-widget-id="725003621507682304">Tweets by @NASDAQ</a>
+	</div>
 
-
-	<table width="100%" style="">
+	<table width="75%">
 	<col width="40%">
   	<col width="40%">
   	<col width="25%">
+  	<tr>
+  		<select class="stock-selector" style='width:200px; margin: 20px 0px' >
+    		<option></option>
+		</select>
+  	</tr>
 	<tr>
 		<td  align="center">
 			<div id="realTimeWithPredictionStockChart" style="height: 400px;">
@@ -60,7 +64,7 @@
 	</tr>
 	<tr>
 		<td width="50%" id="indiSelect" style="display:none;">
-		<select class="indicator-selector" style='width:200px'>
+		<select class="indicator-selector" style='width:200px; margin: 20px 0px;'>
     		<option value="onBalanceVolume">On Balance Volume</option>
     		<option value="simpleMovingAverage">Simple Moving Average</option>
     		
@@ -69,11 +73,6 @@
 		</td>
 	</tr>
 	</table>
-
-	<div>
-	<a class="twitter-timeline" href="https://twitter.com/NASDAQ" data-widget-id="725003621507682304">Tweets by @NASDAQ</a>
-	</div>
-
 
  	<!--Twitter Script-->
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>

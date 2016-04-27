@@ -5,6 +5,37 @@
   <link rel='stylesheet' href='/stylesheets/style.css'/>
   <link rel="stylesheet"  href="/stylesheets/styles-menu.css"/>
   <script src="../javascripts/jquery-1.10.2.js"></script>
+  <style>
+    .container {
+      width: 50%;
+    }
+    .container li{
+      margin: 5px auto;
+      overflow: auto; 
+      padding: 15px;
+      text-align: center;
+      background: #0f71ba;
+      background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+    }
+
+    .container a {
+      text-decoration: blink;
+      color: aliceblue;
+    }
+
+    .container_big
+    {
+      width: 50%;
+      height: 270px;
+      margin: 35px 35px;
+      overflow: auto; 
+      padding: 15px;  
+      background: #0f71ba;
+      background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+      text-decoration: blink;
+      color: aliceblue;
+    }
+  </style>
 </head>
 <body>
   <div id='cssmenu'>
@@ -15,10 +46,11 @@
      <li class='last'><a href='/logout'><span>Logout</span></a></li>
   </ul>
   </div>
-<div>  
-   <div id="thumbnail">
+<div>
+   <div id="large" class="container_big" style="float: right;">{{{ result }}}</div>     
+   <div id="thumbnail" class="container">
     <h3>Click on the query to see the result</h3>
-    <ul>
+    <ul style="padding-left: 0px;">
       <li>
         <a href="/queryInterface?q=1">Show the list of all companies in the database along with their latest stock price.</a>
       </li>
@@ -35,7 +67,6 @@
         <a href="/queryInterface?q=5">List the ids of companies along with their name who have the average stock price lesser than the lowest of Google in the latest one year. </a>
       </li>
    </div> 
-   <div id="large">{{{ result }}}</div>   
 <div id="background"></div>
 </div>
 
