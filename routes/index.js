@@ -179,7 +179,7 @@ router.get('/onBalanceVolume', function(req, res, next){
 	var stockName = req.query.stock;
 	//TODO - ERROR CHECKING
 	//console.log("Stock Id: "+stockName);
-	var query = 'select unix_timestamp(histtime) as time, volume, close from Historical where stockid= "'+ stockName +'" order by histtime desc limit 30';
+	var query = 'select unix_timestamp(histtime) as time, volume, close from Historical where stockid= "'+ stockName +'" order by histtime';
 
 	connection.query(query, function(err, rows, fields) {
 		if (!err){
@@ -229,7 +229,7 @@ router.get('/simpleMovingAverage', function(req, res, next){
 	//var timePeriod = 50; // Most Commonly used
 	//TODO - ERROR CHECKING
 	//console.log("Stock Id: "+stockName);
-	var query = 'select unix_timestamp(histtime) as time, close from Historical where stockid= "'+ stockName +'" order by histtime LIMIT 400';
+	var query = 'select unix_timestamp(histtime) as time, close from Historical where stockid= "'+ stockName +'" order by histtime';
 
 	connection.query(query, function(err, rows, fields) {
 		if (!err){
@@ -251,7 +251,7 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    			total+=rows[i].close;
 		    		var value = [];
 		    		
-		    		value.push(rows[i].time);
+		    		value.push(rows[i].time*1000);
 		    		value.push(total/timePeriod);
 		    		
 		    		table.push(value);
@@ -259,7 +259,7 @@ router.get('/simpleMovingAverage', function(req, res, next){
 		    		for(var i=timePeriod;i<rows.length;i++) {
 		    			total = total + rows[i].close - rows[i-timePeriod].close;
 		    			value = [];
-		    			value.push(rows[i].time);
+		    			value.push(rows[i].time*1000);
 		    			value.push(total/timePeriod);
 		    			table.push(value);
 		    		}
@@ -300,7 +300,7 @@ router.get('/ohlcAverage', function(req, res, next){
 
 	    		for(var i=0;i<rows.length;i++) {
 	    			var value = [];
-	    			value.push(rows[i].time);
+	    			value.push(rows[i].time*1000);
 	    			value.push(rows[i].ohlc);
 	    			table.push(value);
 	    		}
@@ -475,9 +475,6 @@ router.get('/queryInterface', function(req, res, next) {
 });
 
 
-
-
-
 //GET Request
 //For a given stock, get a short term prediction using Bayesian curve fitting
 router.get('/getBayesianPrediction', function(req, res, next){
@@ -519,7 +516,11 @@ router.get('/getBayesianPrediction', function(req, res, next){
 							var t = (time + 60*(i+1))*1000;
 							table.push([t, data[i]]);
 						}
-						res.send(JSON.stringify(table));
+						var message = "HELLO";
+						// Msg Logic
+						var returnJSON = table; //{msg: message, data: table};
+
+						res.send(JSON.stringify(returnJSON));
 					}
 				});
 		   }

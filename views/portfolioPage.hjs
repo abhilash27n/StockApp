@@ -67,7 +67,7 @@
 		<select class="indicator-selector" style='width:200px; margin: 20px 0px;'>
     		<option value="onBalanceVolume">On Balance Volume</option>
     		<option value="simpleMovingAverage">Simple Moving Average</option>
-    		
+    		<option value="ohlcAverage">OHLC Average</option>
 		</select>
 		<div id="indicatorChart" style="height: 400px; min-width: 310px">
 		</td>
@@ -115,6 +115,9 @@
 	    		createSimpleMovingAverageChart(selectedStock);
 	    	if(selectedIndicator == "onBalanceVolume")
 	    		createOnBalanceMovingAverageChart(selectedStock);
+	    	if(selectedIndicator == "ohlcAverage")
+	    		createOHLCAverageChart(selectedStock);
+	    	
 	    }); 
 
 
@@ -525,6 +528,282 @@
 		    });
 
 		}
+
+ 		function createSimpleMovingAverageChart(selectedStock) {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        name = selectedStock;
+
+		    /**
+		     * Create the chart when all data is loaded
+		     * @returns {undefined}
+		     */
+		    function createChart() {
+
+		        $('#indicatorChart').highcharts('StockChart', {
+
+		            rangeSelector: {
+		                selected: 4
+		            },
+
+		            yAxis: {
+		                labels: {
+		                    formatter: function () {
+		                        return (this.value > 0 ? ' + ' : '') + this.value;
+		                    }
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 2,
+		                    color: 'silver'
+		                }]
+		            },
+
+		            plotOptions: {
+		                series: {
+		                    compare: 'undefined'
+		                }
+		            },
+
+		            title : {
+		                text : selectedStock + ': Simple Moving Average'
+		            },
+
+		            tooltip: {
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y} USD</b> ({point.change} USD)<br/>',
+		                changeDecimals: 2,
+		                valueDecimals: 2
+		            },
+
+		            series: seriesOptions
+		        });
+		    }
+
+
+	        $.getJSON('http://localhost:3000/simpleMovingAverage?stock='+name+'&timePeriod=200',    function (data) {
+
+	            seriesOptions[0] = {
+	                name: name + " SMA 200",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 3) {
+	                createChart();
+	            }
+	        });
+
+	        $.getJSON('http://localhost:3000/simpleMovingAverage?stock='+name+'&timePeriod=50',    function (data) {
+
+	            seriesOptions[1] = {
+	                name: name + " SMA 50",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 3) {
+	                createChart();
+	            }
+	        });
+
+	       	$.getJSON('http://localhost:3000/getHistoricalStockData?stock='+name,    function (data) {
+
+	            seriesOptions[2] = {
+	                name: name + " Price",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 3) {
+	                createChart();
+	            }
+	        });
+		}
+
+
+ 		function createOHLCAverageChart(selectedStock) {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        name = selectedStock;
+
+		    /**
+		     * Create the chart when all data is loaded
+		     * @returns {undefined}
+		     */
+		    function createChart() {
+
+		        $('#indicatorChart').highcharts('StockChart', {
+
+		            rangeSelector: {
+		                selected: 4
+		            },
+
+		            yAxis: {
+		                labels: {
+		                    formatter: function () {
+		                        return (this.value > 0 ? ' + ' : '') + this.value;
+		                    }
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 2,
+		                    color: 'silver'
+		                }]
+		            },
+
+		            plotOptions: {
+		                series: {
+		                    compare: 'undefined'
+		                }
+		            },
+
+		            title : {
+		                text : selectedStock + ': OHLC Average'
+		            },
+
+		            tooltip: {
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y} USD</b> ({point.change} USD)<br/>',
+		                changeDecimals: 2,
+		                valueDecimals: 2
+		            },
+
+		            series: seriesOptions
+		        });
+		    }
+
+
+	        $.getJSON('http://localhost:3000/ohlcAverage?stock='+name,    function (data) {
+
+	            seriesOptions[0] = {
+	                name: name + " OHLC Avg",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+
+	       	$.getJSON('http://localhost:3000/getHistoricalStockData?stock='+name,    function (data) {
+
+	            seriesOptions[1] = {
+	                name: name + " Price",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+		}
+
+
+
+
+ function createRealTimeWithPredictionChart(selectedStock) {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        name = selectedStock;
+
+		    /**
+		     * Create the chart when all data is loaded
+		     * @returns {undefined}
+		     */
+		    function createChart() {
+
+		        $('#realTimeWithPredictionStockChart').highcharts('StockChart', {
+
+		            rangeSelector: {
+		                selected: 4
+		            },
+
+		            yAxis: {
+		                labels: {
+		                    formatter: function () {
+		                        return (this.value > 0 ? ' + ' : '') + this.value;
+		                    }
+		                },
+		                plotLines: [{
+		                    value: 0,
+		                    width: 2,
+		                    color: 'silver'
+		                }]
+		            },
+
+		            plotOptions: {
+		                series: {
+		                    compare: 'undefined'
+		                }
+		            },
+
+		            title : {
+		                text : selectedStock + ' Real Time With Prediction'
+		            },
+
+		            tooltip: {
+		                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y} USD</b> ({point.change} USD)<br/>',
+		                changeDecimals: 2,
+		                valueDecimals: 2
+		            },
+
+		            series: seriesOptions
+		        });
+		    }
+
+
+	        $.getJSON('http://localhost:3000/getRealTimeStockData?stock='+name,    function (data) {
+
+	            seriesOptions[0] = {
+	                name: name + " ACTUAL STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+
+	        $.getJSON('http://localhost:3000/getBayesianPrediction?stock='+name,    function (data) {
+
+	            seriesOptions[1] = {
+	                name: name + " PREDICTED STOCK DATA",
+	                data: data
+	            };
+
+	            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+	            // we keep a counter and create the chart when all the data is loaded.
+	            seriesCounter += 1;
+
+	            if (seriesCounter === 2) {
+	                createChart();
+	            }
+	        });
+	    
+		}
+
+
+
 
     </script>
 
