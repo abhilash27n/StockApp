@@ -475,9 +475,6 @@ router.get('/queryInterface', function(req, res, next) {
 });
 
 
-
-
-
 //GET Request
 //For a given stock, get a short term prediction using Bayesian curve fitting
 router.get('/getBayesianPrediction', function(req, res, next){
@@ -519,7 +516,11 @@ router.get('/getBayesianPrediction', function(req, res, next){
 							var t = (time + 60*(i+1))*1000;
 							table.push([t, data[i]]);
 						}
-						res.send(JSON.stringify(table));
+						var message = "HELLO";
+						// Msg Logic
+						var returnJSON = table; //{msg: message, data: table};
+
+						res.send(JSON.stringify(returnJSON));
 					}
 				});
 		   }
