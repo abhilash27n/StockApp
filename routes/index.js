@@ -40,12 +40,26 @@ router.get('/getsvmprediction', function(req,res,next) {
   	
   	//var filepath = path.join(__dirname, "Hello.py");
   	//console.log(filepath);
+  	var stockid = req.query.stock;
+  	var mappings = {};
+  	mappings['GOOG'] = 90319;
+  	mappings['YHOO'] = 83435;
+  	mappings['TSLA'] = 15579;
+  	mappings['FB'] = 13407;
+  	mappings['AAPL'] = 14593;
+  	mappings['MSFT'] = 10107;
+  	mappings['LNKD'] = 90857;
+  	mappings['TWTR'] = 86158;
+  	mappings['CSCO'] = 76076;
+  	mappings['NVDA'] = 86580;
+
   	var datafilepath = path.join(__dirname,"../python/data.csv")
   	var indexfilepath = path.join(__dirname,"../python/ndxtdata.csv")
+  	var perm_no = mappings[stockid];
   	var options = {
 	  mode: 'text',
 	  scriptPath: path.join(__dirname,"../python"),
-	  args:[datafilepath, indexfilepath]
+	  args:[datafilepath, indexfilepath,perm_no]
 	};
 
   	PythonShell.run("svm.py", options, function(err,data){

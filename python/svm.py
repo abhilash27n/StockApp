@@ -148,7 +148,8 @@ def main():
 	ndxtdf = ndxtdf.sort_values(by='Date', ascending=True)
 	ndxtPrices = list(ndxtdf['Close'])	
 	#print ndxtdf.shape
-	startOfTwelve = list(df[df['PERMNO'] == 60871]['date']).index(20120103)
+	val = int(sys.argv[3])
+	startOfTwelve = list(df[df['PERMNO'] == val]['date']).index(20120103)
 	# we want to predict where it will be on the next day based on X days previous
 	numDaysArray = [5, 10, 20, 90, 270] # day, week, month, quarter, year
 	predictionDict = {}
@@ -157,7 +158,7 @@ def main():
 		for numDayStock in numDaysArray:
 			ndxtVolatilityArray = calcPriceVolatility(numDayIndex, ndxtPrices)
 			ndxtMomentumArray = calcMomentum(numDayIndex, ndxtPrices)
-			percentage = makeModelAndPredict(60871,numDayStock,numDayIndex,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
+			percentage = makeModelAndPredict(val,numDayStock,numDayIndex,ndxtVolatilityArray,ndxtMomentumArray,startOfTwelve)
 	print myMap[max(myMap)]
 if __name__ == "__main__": 
 	main()
