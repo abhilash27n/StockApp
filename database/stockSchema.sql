@@ -51,6 +51,11 @@ insert into Stocks values("YHOO", "Yahoo");
 insert into Stocks values("TSLA", "Tesla");
 insert into Stocks values("FB", "Facebook");
 insert into Stocks values("AAPL", "Apple");
+insert into Stocks values("MSFT", "Microsoft");
+insert into Stocks values("LNKD", "Linkedin");
+insert into Stocks values("TWTR", "Twitter");
+insert into Stocks values("CSCO", "Cisco");
+insert into Stocks values("NVDA", "Nvidia");
 
 insert into Users(userid, pswd, fullName) values ("test", "test", "TEST");
 insert into Portfolio values("AAPL", "test");

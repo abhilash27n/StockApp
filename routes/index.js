@@ -3,6 +3,8 @@ var mysql = require('mysql');
 var CronJob = require('cron').CronJob;
 var googleStocks = require('google-stocks');
 var yahooFinance = require('yahoo-finance');
+var PythonShell = require('python-shell');
+
 
 //Bridge API for Java-Node.js
 var java = require('java');
@@ -19,7 +21,7 @@ var connection = mysql.createConnection({
   // user     : 'stockuser',
   // password : 'password',
   user   : 'root',
-  password: 'root',
+  password: 'welcome1',
   database : 'stockSchema'
 });
 
@@ -33,6 +35,31 @@ router.get('/', function(req, res, next) {
   	res.render('login');
   } 
 });
+
+router.get('/getsvmprediction', function(req,res,next) {
+  	
+  	//var filepath = path.join(__dirname, "Hello.py");
+  	//console.log(filepath);
+  	var datafilepath = path.join(__dirname,"../python/data.csv")
+  	var indexfilepath = path.join(__dirname,"../python/ndxtdata.csv")
+  	var options = {
+	  mode: 'text',
+	  scriptPath: path.join(__dirname,"../python"),
+	  args:[datafilepath, indexfilepath]
+	};
+
+  	PythonShell.run("svm.py", options, function(err,data){
+  		 if (err){
+  		 	console.log(err);
+  		 }
+  		 else{
+
+  		 	console.log('finished');
+  		 	res.send(JSON.stringify(data));	
+  		 }
+  	});
+});
+
 
 router.get('/login', function(req, res, next) {
 	res.render('login');
@@ -627,7 +654,7 @@ new CronJob('0 * * * * *', function() {
 	//console.log(check);
 	if(check) {
 		console.log("CALLING STOCK EVERY MINUTE");	
-	    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL"];
+	    var stockNames = ["GOOG", "YHOO", "TSLA", "FB", "AAPL","MSFT","LNKD","TWTR","CSCO","NVDA"];
 
 		for(var i = 0; i < stockNames.length; i++){
 		  //YAHOO FINANCE BEGIN  http://www.jarloo.com/yahoo_finance/

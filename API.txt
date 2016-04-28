@@ -1,0 +1,26 @@
+GET: /getAllStocks?user=ALL
+Get a list of all stocks in the database along with stock id or for a particular user with user_id
+
+GET: /getRealTimeStockData?stock=<Stock_name>
+Get realtime stock information about a particular stock
+
+GET: /onBalanceVolume?stock=<Stock_name>
+Get on balance volume indicator for a given stock
+
+GET: /simpleMovingAverage?stock=<Stock_name>
+Get simple moving average indicator for a given stock
+
+GET: /ohlcAverage?stock=<Stock_name>
+Get open high low close weighted average for a given stock
+
+GET: /getHistoricalStockData?stock=<Stock_name>
+Get historical data for a given stock
+
+GET: /getBayesianPrediction?stock=<Stock_name>
+Get short term prediction for the next one hour for a given stock
+
+GET: /SVMPrediction?stock=<Stock_name>
+Get buy or sell decision for a future date using features like ...
+
+POST: /addHistoricalData
+Takes as input stock id, to date(yyyy-mm-dd) and from date(yyyy-mm-dd) and adds data to database using yahoo finance API
