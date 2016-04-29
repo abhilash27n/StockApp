@@ -23,11 +23,31 @@
 	      height: 370px;
 	      overflow: auto; 
 	      padding: 15px;  
-	      background: #0f71ba;
-	      background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+	      background: #3E3F43;
+	      background: linear-gradient(to bottom, #323232 0%, #3E3F43 100%);
 	      text-decoration: blink;
 	      color: aliceblue;
+	      font-family: 'Unica One';
 	    }
+
+	    .textbox {
+	      height: 25px;
+	      width: 200px;
+	      border: solid 1px #E5E5E5;
+	      outline: 0;
+	      font: normal 13px/100% Verdana, Tahoma, sans-serif;
+	      background: #FFFFFF url('bg_form.png') left top repeat-x;
+	      background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	      background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+	      box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+	      -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+	      -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+	  	}
+
+		.textbox:focus {
+			border-color: #C9C9C9;
+		    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 8px;
+		}   
 	</style>
   </head>
 
@@ -48,6 +68,7 @@
  	 <form id="buyOrSell" action="/buyOrSell" method="post">
 		  <input type="text" value="{{ username }}" id="username" name="username"/>
 		  <input type="text" value="{{ userid }}" id="userid" name="userid"/>
+		  <input type="text" value="" id="hiddenStockId" name="hiddenStockId"/>
 		  <input type="submit" id="hiddenSubmitButton"/>
 	  </form>
   </div>
@@ -84,8 +105,17 @@
 		</select>
 		<div id="indicatorChart" style="height: 400px; min-width: 310px">
 		</td>
-		<td  id="svmPredContent" style="display: none;">
+		<td  id="svmPredContent" style="display: none; padding-top: 70px;">
 			<div id="svmPred">
+			<h3>Buy/Sell Advice</h3>
+			<div id="svmOutput"></div>
+			<br/>
+			<br/>
+			<br/>
+			<label for="numDays">Number of days to predict for: </label>
+			<br/>
+			<br/>	
+			<input type="text" id="numDays" onchange="updateSVMPrediction();"></input>
 			</div>
 		</td>
 	</tr>
@@ -98,17 +128,28 @@
     <!-- Overriding submit with ajax call-->
     <script type="text/javascript">
 
-		function getSVMPrediction(selectedStock){
+    	function updateSVMPrediction(){
+    		var days = parseInt(document.getElementById('numDays').value);
+    		var stock = document.getElementById('hiddenStockId').value;
+    		getSVMPrediction(stock, days);
+    	}
+
+		function getSVMPrediction(selectedStock,days){
 			var name = selectedStock;
-			var days = 270;
+			if (!days)
+				days = 270;
+
+			document.getElementById('svmOutput').innerHTML = "";
+			document.getElementById('svmPredContent').style.display = "none";
+
 			$.getJSON('http://localhost:3000/getSVMPrediction?stock='+name+'&days='+days,    function (data) {
 				var res;
 				if(data == 1)
-					res = "Based on our estimate, you should buy " + name + " today!";
+					res = "Based on our estimate for " + days + " days, you should buy " + name + " today!";
 				else
-					res = "Based on our estimate, you should sell " + name + " today!";
+					res = "Based on our estimate for " + days + " days, you should sell " + name + " today!";
 
-				document.getElementById('svmPred').innerHTML = res;
+				document.getElementById('svmOutput').innerHTML = res;
 				document.getElementById('svmPredContent').style.display = "table-cell";
 		    });
 		}
@@ -133,6 +174,8 @@
 	    var $eventSelect = $(".stock-selector");
 	    $eventSelect.on("select2:select", function (e) { 
 	    	selectedStock = e.params.data.id;    //or data.text
+	    	document.getElementById("hiddenStockId").value = selectedStock;
+
 	    	createRealTimeWithPredictionChart(selectedStock);
 	    	createHistoricalWithPredictionChart(selectedStock);
 	    	document.getElementById("indiSelect").style.display = "table-cell";
