@@ -57,7 +57,7 @@
   </style> 
 
   </head>
-   <body background="../images/Bg.jpeg" style="color:#DDDDDD; background-attachment: fixed; background-size: 100%; ">
+   <body background="../images/Bg.jpeg" style="color:black; background-attachment: fixed; background-size: 100%; ">
     <img style="height:100px" src="../images/title.png">
     <h1 style="padding-left: 300px">Stock Analysis</h1>
     <form action="/login" method="post">

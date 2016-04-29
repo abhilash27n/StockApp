@@ -21,7 +21,7 @@ var connection = mysql.createConnection({
   // user     : 'stockuser',
   // password : 'password',
   user   : 'root',
-  password: 'welcome1',
+  password: 'root',
   database : 'stockSchema'
 });
 
@@ -421,7 +421,7 @@ router.get('/queryInterface', function(req, res, next) {
 					for(var i=0;i<rows.length;i++) {
 						str += "Stock Name: " + rows[i].stockname + "</br>";
 						str += "Price: "+ rows[i].price + "</br>";
-						str += "=====================================</br>";
+						str += "<hr>";
 					}
 					//console.log(str);
 					res.render('queryInterface', {result: str});
@@ -441,7 +441,7 @@ router.get('/queryInterface', function(req, res, next) {
 					for(var i=0;i<rows.length;i++) {
 						str += "The highest stock price of Google in the last ten days </br>";
 						str += "Price: "+ rows[i].price + "</br>";
-						str += "=====================================</br>";
+						str += "<hr>";
 					}
 					//console.log(str);
 					res.render('queryInterface', {result: str});
@@ -462,7 +462,7 @@ router.get('/queryInterface', function(req, res, next) {
 					for(var i=0;i<rows.length;i++) {
 						str += "Average stock price of (Microsoft) Google in the latest one year </br>";
 						str += "Price: "+ rows[i].price + "</br>";
-						str += "=====================================</br>";
+						str += "<hr>";
 					}
 					res.render('queryInterface', {result: str});
 				}
@@ -481,7 +481,7 @@ router.get('/queryInterface', function(req, res, next) {
 					for(var i=0;i<rows.length;i++) {
 						str += "Stock ID: " + rows[i].stockid + "</br>";
 						str += "Price: "+ rows[i].price + "</br>";
-						str += "=====================================</br>";
+						str += "<hr>";
 
 					}
 					//console.log(str);
@@ -505,7 +505,7 @@ router.get('/queryInterface', function(req, res, next) {
 						str += "Stock ID: " + rows[i].stockid + "</br>";
 						str += "Stock Name: " + rows[i].stockname + "</br>";
 						str += "Price: "+ rows[i].avgprice + "</br>";
-						str += "=====================================</br>";					}
+						str += "<hr>";					}
 					//console.log(str);
 					res.render('queryInterface', {result: str});
 				}
