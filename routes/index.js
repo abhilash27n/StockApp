@@ -36,11 +36,13 @@ router.get('/', function(req, res, next) {
   } 
 });
 
-router.get('/getsvmprediction', function(req,res,next) {
+router.get('/getSVMPrediction', function(req,res,next) {
   	
   	//var filepath = path.join(__dirname, "Hello.py");
   	//console.log(filepath);
   	var stockid = req.query.stock;
+  	var numDays = req.query.days;
+
   	var mappings = {};
   	mappings['GOOG'] = 90319;
   	mappings['YHOO'] = 83435;
@@ -59,7 +61,7 @@ router.get('/getsvmprediction', function(req,res,next) {
   	var options = {
 	  mode: 'text',
 	  scriptPath: path.join(__dirname,"../python"),
-	  args:[datafilepath, indexfilepath,perm_no]
+	  args:[datafilepath, indexfilepath,perm_no, numDays]
 	};
 
   	PythonShell.run("svm.py", options, function(err,data){
@@ -67,9 +69,9 @@ router.get('/getsvmprediction', function(req,res,next) {
   		 	console.log(err);
   		 }
   		 else{
-
-  		 	console.log('finished');
-  		 	res.send(JSON.stringify(data));	
+  		 	var label = parseInt(data[0].replace(/[^\w-]/gi, ''));
+  		 	console.log('finished svm calculations');
+  		 	res.send(JSON.stringify(label));	
   		 }
   	});
 });

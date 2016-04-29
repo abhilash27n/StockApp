@@ -7,7 +7,7 @@ from sklearn import cross_validation
 
 # read the data
 df = pandas.read_csv(sys.argv[1])
-daysAhead = 270
+daysAhead = int(sys.argv[4])
 ndf= pandas.read_csv(sys.argv[2])
 myMap={}
 # calculate price volatility array given company

@@ -18,7 +18,20 @@
     <!-- For highcharts -->
     <script src="../javascripts/Highstock-4.2.4/js/highstock.js"></script>
 	<script src="../javascripts/Highstock-4.2.4/js/modules/exporting.js"></script>
+	<style>
+		#svmPred {
+	      height: 370px;
+	      overflow: auto; 
+	      padding: 15px;  
+	      background: #0f71ba;
+	      background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+	      text-decoration: blink;
+	      color: aliceblue;
+	    }
+	</style>
   </head>
+
+
   <body>
   <div id='cssmenu'>
 	<ul>
@@ -71,6 +84,10 @@
 		</select>
 		<div id="indicatorChart" style="height: 400px; min-width: 310px">
 		</td>
+		<td  id="svmPredContent" style="display: none;">
+			<div id="svmPred">
+			</div>
+		</td>
 	</tr>
 	</table>
 
@@ -80,6 +97,21 @@
     <!--ADDING AJAX CALLS ON SUBMIT-->
     <!-- Overriding submit with ajax call-->
     <script type="text/javascript">
+
+		function getSVMPrediction(selectedStock){
+			var name = selectedStock;
+			var days = 270;
+			$.getJSON('http://localhost:3000/getSVMPrediction?stock='+name+'&days='+days,    function (data) {
+				var res;
+				if(data == 1)
+					res = "Based on our estimate, you should buy " + name + " today!";
+				else
+					res = "Based on our estimate, you should sell " + name + " today!";
+
+				document.getElementById('svmPred').innerHTML = res;
+				document.getElementById('svmPredContent').style.display = "table-cell";
+		    });
+		}
 
 	    $(document).ready(function() {
 	    	var user = document.getElementById("userid").value;
@@ -105,6 +137,7 @@
 	    	createHistoricalWithPredictionChart(selectedStock);
 	    	document.getElementById("indiSelect").style.display = "table-cell";
 	    	createOnBalanceMovingAverageChart(selectedStock);
+	    	getSVMPrediction(selectedStock);
 	    }); 
 
 	    //Indicator Selector
